@@ -1,0 +1,21 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - {{group.name}}
+{% endblock %}
+
+{% block content %}
+	<h1>{{result.groupname}} - {{game.name}}</h1>
+
+	<body>
+		<h4>Placings</h4>
+		<ul>
+			{% for key, value in resdict.items %}
+				<li>{{key}} [{{value.1}}] - {{value.0}}</li>
+			{% endfor %}
+		</ul>
+		<a href= "{% url 'groupview' group.id %}">Back to Group</a>
+		<br>
+		<a href="{% url 'home' %}">Home</a>
+	</body>
+{% endblock %}

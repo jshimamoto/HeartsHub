@@ -1,0 +1,53 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - Groups
+{% endblock %}
+
+{% block content %}
+
+<body>
+	<h1>Groups</h1>
+	<ul>
+		{% for i in user.group.all %}
+			{% if i.shared == False %}
+				<li><a href = "{% url 'groupview' i.id %}">{{i.name}}</a>
+					<ul>
+						{% for j in user.group.person_set.all %}
+							<li>{{j.name}}</li>
+						{% endfor %}
+					</ul>
+			{% endif %}
+		{% endfor %}
+	</ul>
+
+	<h2>Shared Groups</h2>
+
+	<h4>Owned</h4>
+
+	<ul>
+		{% for i in user.group.all %}
+			{% if i.shared == True %}
+				<li><a href = "{% url 'groupview' i.id %}">{{i.name}}</a>
+					<ul>
+						{% for j in group.person_set.all %}
+							<li>{{j.name}}</li>
+						{% endfor %}
+					</ul>
+			{% endif %}
+		{% endfor %}
+	</ul>
+
+	<h4>Shared with Me</h4>
+	<ul>
+		{% for i in sharedgroups %}
+			<li><a href = "{% url 'groupview' i.id %}">{{i.name}}</a>
+				<ul>
+					{% for j in i.person_set.all %}
+						<li>{{j.name}}</li>
+					{% endfor %}
+				</ul>
+		{% endfor %}
+	</ul>
+</body>
+{% endblock %}

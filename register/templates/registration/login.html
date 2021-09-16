@@ -1,0 +1,83 @@
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+	<style type="text/css">
+		.sidenav {
+			height: 100%;
+			width: 160px;
+			position: fixed;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			background-color: #8B0000;
+			overflow-x: hidden;
+			padding-top: 20px;
+		}
+
+		.sidenav a {
+			padding: 6px 8px 6px 16px;
+			text-decoration: none;
+			color: #A9A9A9;
+			font-size: 30px;
+			display: block;
+			font-family: Corbel;
+		}
+
+		.sidenav a:hover{
+			color: #f1f1f1;
+		}
+
+		.home_app{
+			margin-left: 160px;
+			padding: 6px 10px;
+		}
+	</style>
+	<title>
+		{% block title %}
+		Hearts Tracker
+		{% endblock %}
+	</title>
+</head>
+
+<body>
+	<div class="sidenav">
+		<a href="/">Home</a>
+		<a href="/groups">Groups</a>
+		<a href="/create">Create</a>
+		<a href="/people">Players</a>
+		<a href="/login">Log in</a>
+	</div>
+
+	<div id="content", name="content", class="home_app">
+		{% load crispy_forms_tags %}
+		<form method="POST">
+			{% csrf_token %}
+			{{form|crispy}}
+			<p>Don't have an account? Create one <a href="/register">here</a></p>
+			<button type="submit" class="btn btn-primary">Login</button>
+		</form>
+	</div>
+
+	<div class="home_app">
+		{% if messages %}
+    		{% for message in messages %}
+				<div class="alert alert-warning col-3" role="alert">
+					{{ message }}
+				</div>
+    		{% endfor %}
+		{% endif %}
+	</div>
+
+</body>
+
+<footer class="home_app">
+	<p>An AppMoto Creation</p>
+</footer>
+</html>

@@ -1,0 +1,17 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - Players
+{% endblock %}
+
+{% block content %}
+	<h1>Players</h1>
+
+	<body>
+		<ul>
+			{% for player in user.person.all %}
+				<li>{{player.name}}</li>
+			{% endfor %}
+		</ul>
+	</body>
+{% endblock %}

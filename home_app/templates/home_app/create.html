@@ -1,0 +1,39 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - Create Group
+{% endblock %}
+
+{% block content %}
+<h1>Create Group</h1>
+
+<body>
+	<form method="post" action="#">
+		{% csrf_token %}
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="basic-addon1">Group Name</span>
+			</div>
+			<input type="text" name="newgroup" class="form-control col-2" placeholder="Name" aria-label="Name" aria-describedby="basic-addon1">
+		</div>
+
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="basic-addon1">Maximum Points</span>
+			</div>
+			<input type="number" step='1' name="maxpoints" value='50' class="form-control col-1" placeholder="Points" aria-label="Points" aria-describedby="basic-addon1">
+		</div>
+
+
+		<button type="submit", name="startgroup", value="startgroup" class="btn btn-success">Save</button>
+	</form>
+</body>
+{% endblock %}
+
+<!-- Archive -----------------------------------------------------------------------------------------------
+
+	<form method="post" action="/create/">
+		{% csrf_token %}
+		{{form.as_p}}
+		<button type="submit", name="save">Create New Group</button>
+	</form>

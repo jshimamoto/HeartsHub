@@ -1,0 +1,37 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - {{group.name}}
+{% endblock %}
+
+{% block content %}
+	<h1>{{group.name}} - {{game.name}}</h1>
+
+	<body>
+		<h4>Total Points in Game</h4>
+		<ul>
+			{% for person in group.person_set.all %}
+				<li>{{person.name}} - {{person.points}}</li>
+			{% endfor %}
+		</ul>
+
+		<h4>Points in Trick</h4>
+		<form method="post" action="#">
+			{% csrf_token %}
+			<ul>
+			{% for person in group.person_set.all %}
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">{{person.name}}</span>
+					</div>
+					<input type="number" step="1" name="p{{person.id}}" class="form-control col-1" placeholder="" aria-label="" aria-describedby="basic-addon1"> Queen <input type="checkbox", value = "clicked" name="c{{person.id}}"></li>
+				</div>
+			{% endfor %}
+			</ul>
+			<button type="submit", name="save", value="save" class="btn btn-outline-primary">Save</button>
+			<button type="submit", name="endgame", value="endgame" class="btn btn-outline-dark">End Game</button>
+			<!-- <button type="submit", name="moonshot", value="moonshot">Moonshot</button> -->
+		</form>
+
+	</body>
+{% endblock %}

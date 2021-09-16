@@ -1,0 +1,38 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Tracker - Create Group
+{% endblock %}
+
+{% block content %}
+<h1>Add Players to Group</h1>
+
+<body>
+
+	<h4>Players in Group</h4>
+	<ul>
+		{% for i in group.person_set.all %}
+			<li>{{i.name}}</li>
+		{% endfor %}
+	</ul>
+	<form method="post" action="#">
+		{% csrf_token %}
+
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="basic-addon1">Name</span>
+			</div>
+			<input type="text" list="playerlist" name="newplayer" class="form-control col-3" placeholder="" aria-label="" aria-describedby="basic-addon1">
+			<datalist id="playerlist">
+				{% for i in players %}
+					<option value="{{ i.name }}">
+				{% endfor %}
+			</datalist>
+		</div>
+
+		<button type="submit", name="addplayer", value="addplayer" class="btn btn-primary">Add</button>
+		<button type="submit", name="createGroup", value="createGroup" class="btn btn-success">Create Group</button>
+	</form>
+
+</body>
+{% endblock %}
