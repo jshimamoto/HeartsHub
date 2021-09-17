@@ -44,9 +44,11 @@ Hearts Tracker - Groups
 				</div>
 			</div>
 
-			<div>
-				<button type="submit", name="delete", value="delete" class="btn btn-outline-danger">Delete Group</button>
-			</div>
+			{% if group.user == user %}
+				<div>
+					<button type="submit", name="delete", value="delete" class="btn btn-outline-danger">Delete Group</button>
+				</div>
+			{% endif %}
 		</form>
 	</body>
 {% endblock %}

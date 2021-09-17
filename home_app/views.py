@@ -31,6 +31,7 @@ def groupview(response, id):
 	#Restricting view to only user's groups
 	if grp in response.user.group.all() or grp in response.user.profile.sharedgroups.all():
 		username = response.user.username
+		user = response.user
 
 		#Creating a new game within group
 		count = 1
@@ -63,9 +64,10 @@ def groupview(response, id):
 					recipient.profile.save()
 					grp.shared = True
 					grp.save()
-					return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username})
+					messages.success(response, 'Group shared!')
+					return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
 
-		return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username})
+		return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
 
 	return render(response, "home_app/groups.html", {"group": grp})
 
@@ -154,7 +156,6 @@ def game_(response, groupid, gameid):
 							return HttpResponseRedirect("/results/%i" %res.id)
 
 			#Future scope
-			#Auto end game when points > maxpoints
 			#elif response.POST.get("moonshot"):
 
 			#Ending game
@@ -169,9 +170,9 @@ def game_(response, groupid, gameid):
 							person.placing += 1
 							person.save()
 				#Adding stats to person
-				for person in grp.person_set.all():
-					person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
-					person.save()
+				# for person in grp.person_set.all():
+				# 	person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
+				# 	person.save()
 				#Creating results
 				res = results.objects.create(game = gme, groupname = grp.name)
 				for i in grp.person_set.all():
@@ -185,22 +186,18 @@ def game_(response, groupid, gameid):
 
 def result(response, resultid):
 	res = results.objects.get(id = resultid)
-	grp = group.objects.get(name__exact = res.groupname)
 	gme = res.game
+	grp = gme.group
 
-	#Restricting view to only user's items
-	if grp in response.user.group.all() or grp in response.user.profile.sharedgroups.all():
+	resdict = {}
+	splitbyplayer = res.stats.split(";")
+	splitcleaned = [i for i in splitbyplayer if i != ""]
+	for i in splitcleaned:
+		splitstats = i.split(",")
+		resdict[splitstats[0]] = [splitstats[1], splitstats[2]]
 
-		resdict = {}
-		splitbyplayer = res.stats.split(";")
-		splitcleaned = [i for i in splitbyplayer if i != ""]
-		for i in splitcleaned:
-			splitstats = i.split(",")
-			resdict[splitstats[0]] = [splitstats[1], splitstats[2]]
+	return render(response, "home_app/results.html", {"result":res, "resdict": resdict, "group": grp})
 
-		return render(response, "home_app/results.html", {"result":res, "game": gme, "resdict": resdict, "group":grp})
-
-	return render(response, "home_app/groups.html", {"group": grp})
 
 #Statistic Views------------------------------------------------------------------------------------------------------
 
@@ -239,11 +236,10 @@ def create(response):
 			if int(response.POST.get('maxpoints')) < 13:
 				messages.error(response, 'Max points must be 13 or greater')
 				return render(response, "home_app/create.html", {})
+
 			n = response.POST.get("newgroup")
-
 			mp = int(response.POST.get("maxpoints"))
-
-			newgroup = group(name=n, maxpoints = mp, user = response.user, owner = response.user)
+			newgroup = group(name=n, maxpoints = mp, user = response.user, owner = username)
 			newgroup.save()
 			return HttpResponseRedirect("/groups/addplayers/%i" %newgroup.id)
 

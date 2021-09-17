@@ -7,13 +7,13 @@ Hearts Tracker - Groups
 {% block content %}
 
 <body>
-	<h1>Groups</h1>
+	<h1 class="heading">Groups</h1>
 	<ul>
 		{% for i in user.group.all %}
 			{% if i.shared == False %}
 				<li><a href = "{% url 'groupview' i.id %}">{{i.name}}</a>
 					<ul>
-						{% for j in user.group.person_set.all %}
+						{% for j in i.person_set.all %}
 							<li>{{j.name}}</li>
 						{% endfor %}
 					</ul>
@@ -30,7 +30,7 @@ Hearts Tracker - Groups
 			{% if i.shared == True %}
 				<li><a href = "{% url 'groupview' i.id %}">{{i.name}}</a>
 					<ul>
-						{% for j in group.person_set.all %}
+						{% for j in i.person_set.all %}
 							<li>{{j.name}}</li>
 						{% endfor %}
 					</ul>
