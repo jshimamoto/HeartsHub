@@ -22,7 +22,8 @@ def groups(response):
 		username = response.user.username
 		grp = response.user.group.all()
 		sharedgroups = response.user.profile.sharedgroups.all()
-	return render(response, "home_app/groups.html", {"sharedgroups": sharedgroups})
+		return render(response, "home_app/groups.html", {"sharedgroups": sharedgroups})
+	return render(response, "home_app/groups.html")
 
 def groupview(response, id):
 	grp = group.objects.get(id = id)
