@@ -293,7 +293,7 @@ def people(response):
 
 		return render(response, "home_app/people.html", {})
 
-	return render(response, "home_app/home.html", {})
+	return render(response, "home_app/people.html", {})
 
 
 #----------------------------------------------------------------------------------------------------------------------------------#

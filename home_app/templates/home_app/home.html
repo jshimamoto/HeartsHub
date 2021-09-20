@@ -1,25 +1,99 @@
-{% extends 'home_app/base.html' %}
+<html>
+<head>
+	{% load static %}
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
 
-{% block title %}
-Hearts Tracker - Home Page
-{% endblock %}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-{% block content %}
+	<style type="text/css">
+		.sidenav {
+			height: 100%;
+			width: 160px;
+			position: fixed;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			background-color: #8B0000;
+			overflow-x: hidden;
+			padding-top: 20px;
+		}
 
-<h1 class="title">Hearts Hub</h1>
+		.sidenav a {
+			padding: 6px 8px 6px 16px;
+			text-decoration: none;
+			color: #A9A9A9;
+			font-size: 30px;
+			display: block;
+			font-family: Corbel;
+		}
+
+		.sidenav a:hover{
+			color: #f1f1f1;
+		}
+
+		.home_app{
+			margin-left: 160px;
+			padding: 6px 10px;
+		}
+	</style>
+	<title>Hearts Hub</title>
+</head>
 
 <body>
-	<h2>About</h2>
+	<div class="sidenav">
+		<a href="/">Home</a>
+		<a href="/groups">Groups</a>
+		<a href="/create">Create</a>
+		<a href="/people">Players</a>
+		{% if request.user.is_authenticated %}
+			<a href="/logout">Log out</a>
+		{% else %}
+			<a href="/login">Log in</a>
+		{% endif %}
 
-	<p>This is a WebApp intended to make the tracking of points for Hearts more streamlined and convenient. See below for future features to be added.</p>
-	<br>
-	<h2>Future Additions</h2>
-	<ul>
-		<li>Moonshot button</li>
-		<li>Duplicate group button (replicates players and starts new group with them)</li>
-		<li>Person statistics tracking (will track the player's alltime stats i.e. moonshots, points per game, average placing, etc.)</li>
-		<li>Group statistics: will show stats for players specific to games played within the group (average placings, most placed, etc.)</li>
-		<li>Animations for significant situations (moonshots, 0 points in game, etc.)</li>
-	</ul>
+	</div>
+	<div id="content", name="content", class="home_app">
+		<h1 class="title">Hearts Hub</h1>
+
+		<h2>About</h2>
+
+		<p>This is a WebApp intended to make the tracking of points for Hearts more streamlined and convenient. See below for future features to be added.</p>
+		<br>
+		<iframe width="700" height="480"
+		src="https://www.youtube.com/embed/3Pj7y_vOs7Q">
+		</iframe>
+		<br>
+		<h2>Future Additions</h2>
+		<ul>
+			<li>Moonshot button</li>
+			<li>Duplicate group button (replicates players and starts new group with them)</li>
+			<li>Person statistics tracking (will track the player's alltime stats i.e. moonshots, points per game, average placing, etc.)</li>
+			<li>Group statistics: will show stats for players specific to games played within the group (average placings, most placed, etc.)</li>
+			<li>Animations for significant situations (moonshots, 0 points in game, etc.)</li>
+		</ul>
+	</div>
+
+	<div class="home_app">
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-warning col-3" role="alert">
+					{{ message }}
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+
+<div class="footer">
+	<p class="home_app">An AppMoto Creation</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
-{% endblock %}
+
+
+</html>
