@@ -1,0 +1,20 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Hub - Players
+{% endblock %}
+
+{% block content %}
+	<h1 class="page-title">Players</h1>
+
+	<div class="line-break"></div>
+	<h5 class="desc-small">Click on a player to view statistics and other information</h5>
+	<div class="grid">
+		{% for player in user.person.all %}
+			<div class="card">
+				<p style="text-align: center">{{player.name}}</p>
+			</div>
+		{% endfor %}
+	</div>
+
+{% endblock %}

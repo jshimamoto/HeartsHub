@@ -1,0 +1,72 @@
+{% extends "home_app/base.html" %}
+{% load static %}
+
+{% block title %}
+Hearts Hub - Groups
+{% endblock %}
+
+{% block content %}
+
+	<h1 class="page-title">Groups</h1>
+
+	<h2 class="section-title">Private Groups</h2>
+	<h5 class="desc-small">These are the groups you do not have currently shared</h5>
+	<div class="grid">
+		{% for i in user.group.all %}
+			{% if i.shared == False %}
+				<a href="{% url 'groupview' i.id %}" class="card-link">
+					<div class="card">
+						<img src="{% static 'home_app/images/spade.png' %}" alt="spade icon" class="spade-icon">
+						<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon">
+						<img src="{% static 'home_app/images/diamond.png' %}" alt="diamond icon" class="diamond-icon">
+						<img src="{% static 'home_app/images/club.png' %}" alt="club icon" class="club-icon">
+						<h4>{{i.name}}</h4>
+
+						<div class="line-break"></div>
+
+						<p>Players</p>
+						{% for j in i.person_set.all %}
+							<span class="player-span">{{j.name}}</span>
+						{% endfor %}
+
+						<div class="line-break"></div>
+
+						<p>Games Played: </p>
+					</div>
+				</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<h2 class="section-title">Shared Groups</h2>
+	<h5 class="desc-small" style="margin-bottom: 10px;">These are the groups you have currently shared with other users. Share or delete groups on the group page. You can only delete groups you own</h5>
+	<h4 class="sub-section-title">Owned</h4>
+
+	<div class="grid">
+		{% for i in user.group.all %}
+			{% if i.shared == True %}
+				<a href = "{% url 'groupview' i.id %}">{{i.name}}
+					<div class="card">
+						{% for j in i.person_set.all %}
+							<p>{{j.name}}</p>
+						{% endfor %}
+					</div>
+				</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<h4 class="sub-section-title">Shared with Me</h4>
+	<div class="grid">
+		{% for i in sharedgroups %}
+			<a href = "{% url 'groupview' i.id %}">{{i.name}}
+				<div class="card">
+					{% for j in i.person_set.all %}
+						<p>{{j.name}}</p>
+					{% endfor %}
+				</div>
+			</a>
+		{% endfor %}
+	</div>
+
+{% endblock %}

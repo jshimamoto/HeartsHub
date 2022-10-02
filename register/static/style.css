@@ -1,0 +1,52 @@
+.title {
+		position: relative;
+		text-align: center;
+		color: red;
+		font-family: Corbel;
+}
+
+h2 {
+	position: relative;
+	color: red;
+	font-family: Corbel;
+}
+
+h1 {
+	position: relative;
+	color: red;
+	font-family: Corbel;
+	font-size: 50px;
+}
+
+body {
+	background-color: black;
+}
+
+body::before {
+	content: "";
+	background-image: url('https://images.assetsdelivery.com/compings_v2/sn333g/sn333g1601/sn333g160100004.jpg');
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	opacity: 0.12;
+	z-index: -1;	
+}
+
+p {
+	position: relative;
+	font-family: Corbel;
+	font-size: 18px;
+	font-weight: ;
+}
+
+li a {
+	font-family: Corbel;
+	color: darksalmon;
+	font-size: 20px;
+}
+
+li {
+	font-size: 18px;
+}

@@ -1,0 +1,40 @@
+{% extends "home_app/base.html" %}
+
+{% block title %}
+Hearts Hub - {{res.groupname}}
+{% endblock %}
+
+{% block content %}
+	<h1 class="page-title">{{result.groupname}} - {{result.game.name}}</h1>
+
+	<h2 class="section-title">Placings</h2 >
+	<div class="grid">
+		{% for key, value in resdict.items %}
+			{% if value.1 == "1" %}
+				<div class="card" style="border: 2px solid gold;">
+					<h4>{{key}}</h4>
+					<div class="line-break"></div>
+					<p>Placing: {{value.1}}</p>
+					<p>Points: {{value.0}}</p>
+					<p>Queens: </p>
+					<p>Moonshots: </p>
+				</div>
+
+			{% else %}
+				<div class="card">
+					<h4>{{key}}</h4>
+					<div class="line-break"></div>
+					<p>Placing: {{value.1}}</p>
+					<p>Points: {{value.0}}</p>
+					<p>Queens: </p>
+					<p>Moonshots: </p>
+				</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<br>
+
+	<a href= "{% url 'groupview' group.id %}" class="btn-submit" style="text-decoration: none; margin-top: 20px;">Back to Group</a>
+	<a href="{% url 'home' %}" class="btn-submit" style="text-decoration: none; margin-top: 20px;">Home</a>
+{% endblock %}

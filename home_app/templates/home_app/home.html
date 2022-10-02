@@ -1,0 +1,26 @@
+{% extends "home_app/base.html" %}
+{% load static %}
+
+{% block title %}
+	Hearts Hub
+{% endblock %}
+
+{% block content %}
+
+	<h1 class="title" style="margin-left: -180px;">Hearts Hub</h1>
+
+	<div class="card" style="margin-right: 20px; margin-top: 20px;padding: 20px; text-align: center; background-color: white;">
+		<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon" style="top: 0; left: 0">
+		<a style="width: 100%; height: 100%; font-family: Helvetica, Arial, sans-serif; font-weight: bold;">This is a WebApp intended to make the tracking of points for Hearts more streamlined and convenient. Log-in or register to access the full functionality and start tracking your points!</a>
+		<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon">
+	</div>
+
+	<br>
+
+	<div class="video">
+		<iframe width="700" height="480" src="https://www.youtube.com/embed/3Pj7y_vOs7Q"></iframe>
+	</div>
+
+	<br>
+
+{% endblock %}

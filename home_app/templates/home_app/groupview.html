@@ -1,0 +1,69 @@
+{% extends "home_app/base.html" %}
+{% load custom_tags %}
+
+{% block title %}
+Hearts Hub - Groups
+{% endblock %}
+
+{% block content %}
+	<h1 class="page-title">{{group.name}}</h1>
+	<h3>Current Max Points for Games - {{group.maxpoints}}</h3>
+	<h2 class="section-title">Players</h2 class="section-title">
+	<h5 class="desc-small">Click here to view individual statistics of players</h5 class="desc-small">
+	<div class="grid">
+		{% for i in group.person_set.all %}
+			<a>
+				<div class="card">
+					<p style="text-align: center; font-weight: bold">{{i.name}}</p>
+				</div>
+			</a>
+		{% endfor %}
+	</div>
+
+	<h2 class="section-title" class="section-title">Games</h2 class="section-title">
+	<h5 class="desc-small">Click a game to either continue or view results</h5>
+	<div class="grid">
+		{% for i in group.game_set.all %}
+			{% if i.complete == False %}
+				<a href="{% url 'game_' group.id i.id %}" class="card-link">
+					<div class="card">
+						<p style="text-align: center; font-weight: bold">{{i.name}}</p>
+					</div>
+				</a>
+			{% else %}
+				<a href="{% url 'result' i.results.id %}" class="card-link">
+					<div class="card">
+						<p style="text-align: center; font-weight: bold">{{i.name}}</p>
+					</div>
+				</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<form method="post" action="#">
+		{% csrf_token %}
+		<button type="submit", name="newgame", value="newgame" class="btn-submit">New Game</button>
+
+		<h2 class="section-title">Manage Group</h2>
+		<h5 class="desc-small">Select a player from your friends list to share this group with. They will be able to share and view this group as well.</h5>
+		<input type="text" list="userlist" name="shareduser" class="form-control col-2" placeholder="Enter username to share with" aria-label="Enter Username" aria-describedby="basic-addon1">
+		<datalist id="userlist">
+			{% for i in users %}
+				{% if i.username != username %}
+					<option value="{{ i.username }}">
+				{% endif %}
+			{% endfor %}
+		</datalist>
+		<div class="input-group-append">
+			<button name="share" value="share" class="btn-submit" type="submit">Share Group</button>
+		</div>
+
+		<div class="line-break"></div>
+
+		{% if group.user == user %}
+			<div>
+				<button type="submit", name="delete", value="delete" class="btn-delete">Delete Group</button>
+			</div>
+		{% endif %}
+	</form>
+{% endblock %}
