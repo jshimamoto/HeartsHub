@@ -15,7 +15,7 @@ Hearts Hub - Groups
 		{% for i in user.group.all %}
 			{% if i.shared == False %}
 				<a href="{% url 'groupview' i.id %}" class="card-link">
-					<div class="card">
+					<div class="card" style="padding-bottom: 40px">
 						<img src="{% static 'home_app/images/spade.png' %}" alt="spade icon" class="spade-icon">
 						<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon">
 						<img src="{% static 'home_app/images/diamond.png' %}" alt="diamond icon" class="diamond-icon">
@@ -25,13 +25,13 @@ Hearts Hub - Groups
 						<div class="line-break"></div>
 
 						<p>Players</p>
-						{% for j in i.person_set.all %}
-							<span class="player-span">{{j.name}}</span>
+						{% for player in i.stats %}
+							<span class="player-span">{{player.name}}</span>
 						{% endfor %}
 
 						<div class="line-break"></div>
 
-						<p>Games Played: </p>
+						<!-- <p>Games Played: {{</p> -->
 					</div>
 				</a>
 			{% endif %}

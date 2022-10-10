@@ -7,7 +7,7 @@ Hearts Hub - Create Group
 {% block content %}
 <h1 class="page-title">Create Group</h1>
 
-<form method="post" action="#">
+<form method="post" action="#" id="form">
 	{% csrf_token %}
 	<h2 class="section-title">Group Information</h2>
 	<h5 class="desc-small">Enter group information here. You will be able to edit the maximum points later if needed</h5>
@@ -23,17 +23,20 @@ Hearts Hub - Create Group
 	<h2 class="section-title">Players</h2>
 	<h5 class="desc-small">Add players to the game here. There must be at least 3 players to create the group and a player name cannot be blank. Click on a player after adding them to remove</h5>
 	<div class="grid" id="players">
-
 	</div>
 
 	<input type="text" name="newPlayer" id="newPlayer" placeholder="Enter name of new player">
-	<button class="btn-submit" type="button" onclick="addPlayer()">Add a Player</button>
+	<button class="btn-submit" type="button" onclick="addPlayer()">Add Player</button>
 
 	<div class="line-break"></div>
-	<button type="submit", name="startgroup", value="startgroup" class="btn-submit">Save</button>
+
+	<textarea style="display: none;" id="formData" name="formData"></textarea>
+	<button type="button", name="startgroup", value="startgroup" class="btn-submit" onclick="send()">Create Group</button>
 </form>
 
 <script type="text/javascript">
+	let players = [];
+
 	const addPlayer = () => {
 		let newPlayer = document.createElement('p')
 		newPlayer.setAttribute('class', 'card')
@@ -42,8 +45,10 @@ Hearts Hub - Create Group
 		let playerName = document.getElementById("newPlayer")
 		newPlayer.innerHTML = `${playerName.value}`
 
+		players.push(playerName.value)
 		document.getElementById("players").appendChild(newPlayer)
 		playerName.value = ""
+		console.log(players)
 	}
 
 	const removePlayer = () => {
@@ -52,6 +57,22 @@ Hearts Hub - Create Group
 			players.removeChild(e.target)
 			e.target.remove()
 		}, {once: true}) 
+	}
+
+	const send = () => {
+		let groupData = {
+			name: document.getElementById("groupname").value,
+			maxPoints: Number(document.getElementById("maxpoints").value),
+			players: players
+		};
+
+		let groupDataText = JSON.stringify(groupData)
+		console.log(groupDataText)
+		const formData = document.getElementById("formData")
+		formData.value = groupDataText
+		console.log(formData.value)
+
+		document.getElementById("form").submit();
 	}
 </script>
 

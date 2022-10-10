@@ -8,41 +8,41 @@ Hearts Hub - Groups
 {% block content %}
 	<h1 class="page-title">{{group.name}}</h1>
 	<h3>Current Max Points for Games - {{group.maxpoints}}</h3>
+
+	{% if group.game_set.all %}
+		<div class="container-center">
+			<a class="link" href="{% url 'groupStats' group.id %}">View Group Statistics</a>
+		</div>
+	{% endif %}
+
 	<h2 class="section-title">Players</h2 class="section-title">
 	<h5 class="desc-small">Click here to view individual statistics of players</h5 class="desc-small">
 	<div class="grid">
-		{% for i in group.person_set.all %}
-			<a>
+		{% for player in group.stats %}
+			<a class="card-link" href="{% url 'playerGroupStats' group.id player.name %}">
 				<div class="card">
-					<p style="text-align: center; font-weight: bold">{{i.name}}</p>
+					<p style="text-align: center; font-weight: bold">{{player.name}}</p>
 				</div>
 			</a>
 		{% endfor %}
 	</div>
 
 	<h2 class="section-title" class="section-title">Games</h2 class="section-title">
-	<h5 class="desc-small">Click a game to either continue or view results</h5>
+	<h5 class="desc-small">Click a game to view the results</h5>
 	<div class="grid">
 		{% for i in group.game_set.all %}
-			{% if i.complete == False %}
-				<a href="{% url 'game_' group.id i.id %}" class="card-link">
-					<div class="card">
-						<p style="text-align: center; font-weight: bold">{{i.name}}</p>
-					</div>
-				</a>
-			{% else %}
-				<a href="{% url 'result' i.results.id %}" class="card-link">
-					<div class="card">
-						<p style="text-align: center; font-weight: bold">{{i.name}}</p>
-					</div>
-				</a>
-			{% endif %}
+			<a href="{% url 'result' group.id i.id %}" class="card-link">
+				<div class="card">
+					<p style="text-align: center; font-weight: bold;">{{i.name}}</p>
+				</div>
+			</a>
 		{% endfor %}
 	</div>
 
+	<a href="{% url 'newGame' group.id gameNumber %}" class="btn-submit" style="font-size: 13px; margin-top: 20px; display: inline-block;">New Game</a>
+
 	<form method="post" action="#">
 		{% csrf_token %}
-		<button type="submit", name="newgame", value="newgame" class="btn-submit">New Game</button>
 
 		<h2 class="section-title">Manage Group</h2>
 		<h5 class="desc-small">Select a player from your friends list to share this group with. They will be able to share and view this group as well.</h5>

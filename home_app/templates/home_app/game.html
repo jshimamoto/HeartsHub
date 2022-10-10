@@ -5,42 +5,47 @@ Hearts Hub - {{group.name}}
 {% endblock %}
 
 {% block content %}
-	<h1 class="page-title">{{group.name}} - {{game.name}}</h1>
+	<h1 class="page-title">{{group.name}} - {{gameName}}</h1>
 
 	<h2 class="section-title">Total Points in Game</h2 class="section-title">
 	<h5 class="desc-small" style="margin-bottom: 10px">These are the current standings in the game. The maximum points set for this group is {{group.maxpoints}}</h5>
 	<div style="margin: 0px auto 10px auto; width: 90%"> 
-		{% for person in group.person_set.all %}
-			<p style="font-family: monospace; margin-bottom: 5px" class="player_data" id="{{person.name}}">{{person.name}} - {{person.points}}</p>
+		{% for i in group.stats %}
+			<p style="font-family: monospace; margin-bottom: 5px; font-weight: bold;" class="player_data" id="{{i.name}}">{{i.name}} - 0</p>
 			<div class="progress-container">
-				<div class="progress-bar" id="{{person.name}}_bar"></div>
+				<div class="progress-bar" id="{{i.name}}_bar"></div>
 			</div>
 		{% endfor %}
 	</div>
 
 	<h2 class="section-title" style="padding-top: 10px;">Points in Hand</h2>
-	<h5 class="desc-small" style="margin-bottom: 20px">Input the number of hearts received for this hand. Click the spades icon for the player that received the Queen of Spades</h5>
-	<button type="button" name="save" value="save" class="btn-submit" onclick="updateScores()">Save</button>
-	<form method="post" action="#">
+	<h5 class="desc-small" style="margin-bottom: 20px">Input the number of hearts received for this hand and click the spades icon for the player that received the Queen of Spades. Either hit the "End Game Now" button or reach the maximum number of points to save this game's data</h5>
+	<form method="post" action="#" id="form">
 		{% csrf_token %}
-		{% for person in group.person_set.all %}
-			<div class="container-input">
-				<label for="p{{person.id}}">{{person.name}}</label>
-				<input type="number" step="1" name="p{{person.id}}" id="{{person.name}}_hearts">
+		<div class="container-center">
+			{% for i in group.stats %}
+				<div class="container-input">
+					<label for="p{{i.id}}">{{i.name}}</label>
+					<input type="number" step="1" name="p{{i.id}}" id="{{i.name}}_hearts">
 
-				<input type="checkbox" value="clicked" name="c{{person.id}}" id="{{person.name}}_queen">
-				<label for="{{person.name}}_queen" class="checked-label">Queen
-				<!-- <span class="label-icon"></span> -->
-				</label>
+					<input type="checkbox" value="clicked" name="c{{i.id}}" id="{{i.name}}_queen">
+					<label for="{{i.name}}_queen" class="checked-label">Queen
+					<!-- <span class="label-icon"></span> -->
+					</label>
 
-				<div class="line-break"></div>
-			</div>
+					<button type="button" class="btn-moonshot" id="{{i.name}}_moon" onclick="moonshot()">Shoot the Moon</button>
 
-		{% endfor %}
+					<div class="line-break"></div>
+				</div>
+			{% endfor %}
 
-		<!-- <button type="submit", name="save", value="save" class="btn-submit">Save</button> -->
-		<button type="submit", name="endgame", value="endgame" class="btn-delete">End Game</button>
-		<!-- <button type="submit", name="moonshot", value="moonshot">Moonshot</button> -->
+			<!-- <button type="submit", name="save", value="save" class="btn-submit">Save</button> -->
+			<button type="button" name="save" value="save" class="btn-submit" onclick="updateScores()">Confirm Points</button>
+			<div class="line-break"></div>
+			<textarea id="formData" style="display: none;" name="formData"></textarea>
+			<button type="button" name="endgame" value="endgame" onclick="send()" class="btn-delete">End Game Now</button>
+			<!-- <button type="submit", name="moonshot", value="moonshot">Moonshot</button> -->
+		</div>
 	</form>
 
 	<script>
@@ -48,81 +53,201 @@ Hearts Hub - {{group.name}}
 		const players = document.getElementsByClassName("player_data")
 		let queenCounter = 0
 		let heartsCounter = 0
+		const playerData = [];
 
+		// Set up array of player data objects -------------------------------------------------------------------------------
+		for(let i = 0; i < players.length; i++) {
+			let text = players[i].innerHTML;
+			let playerName = text.split("-")[0].trim();
+			let score = Number(text.split("-")[1].trim());
+
+			let player = {
+				name: playerName,
+				score: score,
+				hands: [],
+				queens: 0,
+				moonshots: 0,
+				placing: 1
+			}
+			playerData.push(player)
+		}
+
+		// Sets initial state of progress bars -------------------------------------------------------------------------------
 		const setBars = () => {
-			for(let i = 0; i < players.length; i++) {
-				let text = players[i].innerHTML;
-				let player = text.split("-")[0].trim();
-				let score = Number(text.split("-")[1].trim());
-
-				let temp = score / maxPoints;
+			for(let i = 0; i < playerData.length; i++) {
+				let player = playerData[i]
+				let temp = player.score / maxPoints;
 				let progress = Number(temp.toFixed(2)) * 100
 				if (progress >= 100) {
 					progress = 100;
 				}
-
-				document.getElementById(`${player}_bar`).style.width = `${progress}%`;
+				document.getElementById(`${player.name}_bar`).style.width = `${progress}%`;
 			}
 		}
 
+		// Submit form -------------------------------------------------------------------------------
+		const send = () => {
+			// Sorting data to be in order of lowest points
+			let playerDataSorted = playerData.sort((a, b) => {
+				return a.score - b.score;
+			})
+
+			let placing = 1
+
+			// Changing placing based on sorted data
+			for (let i = 0; i < playerDataSorted.length; i++) {
+				if (i > 0 && playerDataSorted[i].score > playerDataSorted[i - 1].score) {
+					placing++
+				}
+				playerDataSorted[i].placing = placing
+			}
+
+			let playerDataText = JSON.stringify(playerDataSorted);
+			const formData = document.getElementById("formData");
+			formData.value = playerDataText;
+
+			document.getElementById("form").submit();
+		}
+
+		// Update scores and player stats if input is correct -------------------------------------------------------------------------------
 		const updateScores = () => {
-			for(let i = 0; i < players.length; i++) {
-				//Gathering data
-				let text = players[i].innerHTML;
-				let player = text.split("-")[0].trim();
-				let score = Number(text.split("-")[1].trim());
+			let heartInputs = document.querySelectorAll("input[type=number]")
+			heartInputs.forEach(input => {
+				heartsCounter += Number(input.value);
+			})
 
-				//Setting current progress so animation function has baseline
-				let temp = score / maxPoints;
-				let current = Number(temp.toFixed(2)) * 100
-				if (current >= 100) {
-					current = 100;
-				} 
-
-				let hearts = Number(document.getElementById(`${player}_hearts`).value)
-				let queen = document.getElementById(`${player}_queen`)
-
-				//Adding Score and adding to hearts counter
-				score += hearts;
-				heartsCounter += hearts
-
-				//Checking if queen is selected and adding to number of queens selected
-				if (queen.checked) {
+			let queenInputs = document.querySelectorAll("input[type=checkbox]")
+			queenInputs.forEach(input => {
+				if (input.checked) {
 					queenCounter += 1;
-					score += 13;
 				}
+			})
 
-				//New progress value
-				let temp1 = score / maxPoints;
-				let progress = Number(temp1.toFixed(2)) * 100
-				if (progress >= 100) {
-					progress = 100;
-				}
+			// Only update scores if hearts and queen is correct
+			if (heartsCounter === 13 && queenCounter === 1) {
+				for(let i = 0; i < playerData.length; i++) {
+					//Gathering data
+					let player = playerData[i]
 
-				//Animate moving of progress bar
-				let bar = document.getElementById(`${player}_bar`);
-				console.log(current)
-				const load = () => {
-					if (current >= progress) {
-						clearInterval(id)
+					//Setting current progress so animation function has baseline
+					let temp = player.score / maxPoints;
+					let current = Number(temp.toFixed(2)) * 100
+					if (current >= 100) {
+						current = 100;
+					}
+
+					let hearts = document.getElementById(`${player.name}_hearts`)
+					let queen = document.getElementById(`${player.name}_queen`)
+
+					//Adding Score and adding to hearts counter
+					player.score += Number(hearts.value);
+					if (hearts.value === "") {
+						player.hands.push(0)
 					} else {
-						console.log(current)
-						current++;
-						bar.style.width = `${current}%`
+						player.hands.push(Number(hearts.value))
+					}
+
+					//Checking if queen is selected and adding to number of queens selected
+					if (queen.checked) {
+						player.score += 13;
+						player.queens += 1
+					}
+
+					//New progress value
+					let temp1 = player.score / maxPoints;
+					let progress = Number(temp1.toFixed(2)) * 100
+					if (progress >= 100) {
+						progress = 100;
+					}
+
+					//Animate moving of progress bar
+					let bar = document.getElementById(`${player.name}_bar`);
+					const load = () => {
+						if (current >= progress) {
+							clearInterval(id)
+						} else {
+							current++;
+							bar.style.width = `${current}%`
+						}
+					}
+					let id = setInterval(load, 10);
+
+					// Set player score and clear inputs
+					let target = document.getElementById(player.name)
+					target.innerHTML = `${player.name} - ${player.score}`
+					hearts.value = '';
+					queen.checked = false;
+				}
+
+				// Ending game if a score is greater than max points
+				for(let i = 0; i < playerData.length; i++) {
+					let player = playerData[i];
+
+					if (player.score >= maxPoints) {
+						send()
 					}
 				}
-				let id = setInterval(load, 10);
 
-				let target = document.getElementById(player)
-				target.innerHTML = `${player} - ${score}`
-
-				// let player = {}
-				// player[key] = val;
-
-				// playerData.push(player)
+			} else {
+				console.log("Hearts do not total 13 or a wrong number of queens selected")
 			}
-			//console.log(playerData)
+
+			//Reset counters
+			heartsCounter = 0;
+			queenCounter = 0;
 		}
+
+		const moonshot = () => {
+			document.addEventListener('click', function(e) {
+				let temp = e.target.id
+				let shooter = temp.split("_")[0]
+
+				playerData.forEach(player => {
+					if (player.name === shooter) {
+						player.moonshots += 1
+						player.hands.push(0)
+					} else {
+						let temp = player.score / maxPoints;
+						let current = Number(temp.toFixed(2)) * 100
+						if (current >= 100) {
+							current = 100;
+						}
+
+						player.score += 26
+						player.hands.push(26)
+
+						let temp1 = player.score / maxPoints;
+						let progress = Number(temp1.toFixed(2)) * 100
+						if (progress >= 100) {
+							progress = 100;
+						}
+
+						let bar = document.getElementById(`${player.name}_bar`);
+						const load = () => {
+							if (current >= progress) {
+								clearInterval(id)
+							} else {
+								current++;
+								bar.style.width = `${current}%`
+							}
+						}
+						let id = setInterval(load, 10);
+
+						let target = document.getElementById(player.name)
+						target.innerHTML = `${player.name} - ${player.score}`
+					}
+				})
+
+				for(let i = 0; i < playerData.length; i++) {
+					let player = playerData[i];
+
+					if (player.score >= maxPoints) {
+						send()
+					}
+				}
+			}, {once: true})
+		}
+
 		window.onload = setBars;
 	</script>
 

@@ -1,61 +1,57 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import person, group, results, game
+from .models import person, group, game
 from .forms import creategroup
 from .templatetags.custom_tags import getvalue
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.contrib.auth.models import User
+import json
 
 #Home---------------------------------------------------------------------------------------------------------------------------------------
 
-def home(response):
-	return render(response, "home_app/home.html", {})
+def home(request):
+	return render(request, "home_app/home.html", {})
 
 #Groups and Games---------------------------------------------------------------------------------------------------------------------------
 
-def groups(response):
-	if response.user.is_authenticated:
-		username = response.user.username
-		grp = response.user.group.all()
-		sharedgroups = response.user.profile.sharedgroups.all()
-		return render(response, "home_app/groups.html", {"sharedgroups": sharedgroups})
-	return render(response, "home_app/groups.html")
+def groups(request):
+	if request.user.is_authenticated:
+		username = request.user.username
+		grp = request.user.group.all()
+		sharedgroups = request.user.profile.sharedgroups.all()
+		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups})
+	return render(request, "home_app/groups.html")
 
-def groupview(response, id):
+def groupview(request, id):
 	grp = group.objects.get(id = id)
 	users = User.objects.all()
 
 	#Restricting view to only user's groups
-	if grp in response.user.group.all() or grp in response.user.profile.sharedgroups.all():
-		username = response.user.username
-		user = response.user
+	if grp in request.user.group.all() or grp in request.user.profile.sharedgroups.all():
+		username = request.user.username
+		user = request.user
+		print(grp.stats)
 
 		#Creating a new game within group
 		count = 1
 		for i in grp.game_set.all():
 			count += 1
-		if response.method == "POST":
-			if response.POST.get("newgame"):
-				for person in grp.person_set.all():
-					person.points = 0
-					person.placing = 1
-					person.save()
-				gamename = "Game " + str(count)
-				newgame = grp.game_set.create(name = gamename)
-				return HttpResponseRedirect("/groups/%i/%i" % (grp.id, newgame.id))
+
+		if request.method == "POST":
+
 			#Deleting Group
-			elif response.POST.get("delete"):
+			if request.POST.get("delete"):
 				grp.delete()
 				return HttpResponseRedirect("/groups")
 			#Sharing the group with another user
-			elif response.POST.get("share"):
-				recipientname = response.POST.get("shareduser")
+			elif request.POST.get("share"):
+				recipientname = request.POST.get("shareduser")
 				if User.objects.filter(username = recipientname).exists() == False:
-					messages.error(response, 'User does not exist')
+					messages.error(request, 'User does not exist')
 				elif recipientname == username:
-					messages.error(response, 'Cannot use your own username')
+					messages.error(request, 'Cannot use your own username')
 				else:
 					recipient = User.objects.get(username = recipientname)
 					recipient.profile.sharedgroups.add(grp)
@@ -63,239 +59,221 @@ def groupview(response, id):
 					recipient.profile.save()
 					grp.shared = True
 					grp.save()
-					messages.success(response, 'Group shared!')
-					return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
+					messages.success(request, 'Group shared!')
+					return render(request, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
 
-		return render(response, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
+		return render(request, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "gameNumber": count})
 
-	return render(response, "home_app/groups.html", {"group": grp})
+	return render(request, "home_app/groups.html", {"group": grp})
 
-def game_(response, groupid, gameid):
+def game_(request, groupid, gameNumber):
 	grp = group.objects.get(id = groupid)
-	gme = grp.game_set.get(id = gameid)
+	gameName = "Game " + str(gameNumber)
 
 	#Restricting view to only user's items
-	if grp in response.user.group.all() or grp in response.user.profile.sharedgroups.all():
+	if grp in request.user.group.all() or grp in request.user.profile.sharedgroups.all():
+		if request.method == "POST":
+			data = request.POST.get("formData")
+			formData = json.loads(data)
 
-		if response.method == "POST":
-			if response.POST.get("save"):
-				#Checking if points add up to 13
-				countpoints = 0
-				for person in grp.person_set.all():
-					if not response.POST.get("p" + str(person.id)):
-						countpoints += 0
-					else:
-						countpoints += int(response.POST.get("p" + str(person.id)))
-				if countpoints != 13:
-					messages.error(response, 'Total hearts for players must add up to 13.')
-					return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
+			newGame = grp.game_set.create(
+				name = gameName,
+				group = grp,
+				results = formData
+			)
+			gameID = newGame.id
 
-				#Checking if only one queen box is checked
-				countqueen = 0
-				for person in grp.person_set.all():
-					if response.POST.get("c" + str(person.id)) == "clicked":
-						countqueen += 1
-				if countqueen > 1:
-					messages.error(response, 'Only one queen box can be selected')
-					return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
-				elif countqueen < 1:
-					messages.error(response, 'A queen box must be selected')
-					return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
+			for player in formData:
+				index = next((i for i, p in enumerate(grp.stats) if p["name"] == player["name"]), None)
+				grp.stats[index]["hands"].extend(player["hands"])
+				grp.stats[index]["placings"].append(player["placing"])
+				grp.stats[index]["queens"] += player["queens"]
+				grp.stats[index]["moonshots"] += player["moonshots"]
+				grp.save()
 
-				#Adding points after input is valid
-				for person in grp.person_set.all():
-					# if response.POST.get("c" + str(person.id)) == "clicked":
-					# 	person.points += 13
-					# elif response.POST.get("p" + str(person.id)) == "":
-					# 	person.points += 0
-					# else:
-					# 	person.points += int(response.POST.get("p" + str(person.id)))
-					# person.save()
+			return HttpResponseRedirect("/groups/%i/results/%i" % (grp.id, gameID))
 
-					tempstats = 0
-
-					if response.POST.get("p" + str(person.id)) == "":
-						person.points += 0
-						tempstats = 0
-					else:
-						person.points += int(response.POST.get("p" + str(person.id)))
-						tempstats = int(response.POST.get("p" + str(person.id)))
-
-					if response.POST.get("c" + str(person.id)) == "clicked":
-						person.points += 13
-						tempstats += 13
-						tempstats = str(tempstats) + "q"
-					else:
-						tempstats = str(tempstats)
-
-					# tempstats += "." + str(grp.id) + "-" + str(gme.id) + ","
-					# person.stats += tempstats
-
-					person.save()
-
-				#Ending the game when maxpoints is reached
-				for person in grp.person_set.all():
-					if person.points >= grp.maxpoints:
-						gme.complete = True
-						gme.save()
-						for person in grp.person_set.all():
-							for i in grp.person_set.all():
-								if i.id == person.id:
-									pass
-								elif i.points < person.points:
-									person.placing += 1
-									person.save()
-						#Adding stats to person
-						# for person in grp.person_set.all():
-						# 	person.stats += str(person.placing) + "." +str(grp.id) + "-" + str(gme.id) + ";"
-						# 	person.save()
-						#Creating results
-						res = results.objects.create(game = gme, groupname = grp.name)
-						for i in grp.person_set.all():
-							res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
-							res.save()
-						return HttpResponseRedirect("/results/%i" %res.id)
-
-			#Future scope
-			#elif response.POST.get("moonshot"):
+		return render(request, "home_app/game.html", {"group": grp, "gameName": gameName})
 
 			#Ending game
-			if response.POST.get("endgame"):
-				gme.complete = True
-				gme.save()
-				for person in grp.person_set.all():
-					for i in grp.person_set.all():
-						if i.id == person.id:
-							pass
-						elif i.points < person.points:
-							person.placing += 1
-							person.save()
-				#Adding stats to person
-				# for person in grp.person_set.all():
-				# 	person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
-				# 	person.save()
-				#Creating results
-				res = results.objects.create(game = gme, groupname = grp.name)
-				for i in grp.person_set.all():
-					res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
-					res.save()
-				return HttpResponseRedirect("/results/%i" %res.id)
+			# if request.POST.get("endgame"):
+			# 	gme.complete = True
+			# 	gme.save()
+			# 	for person in grp.person_set.all():
+			# 		for i in grp.person_set.all():
+			# 			if i.id == person.id:
+			# 				pass
+			# 			elif i.points < person.points:
+			# 				person.placing += 1
+			# 				person.save()
+			# 	# Adding stats to person
+			# 	for person in grp.person_set.all():
+			# 		person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
+			# 		person.save()
+			# 	Creating results
+			# 	res = results.objects.create(game = gme, groupname = grp.name)
+			# 	for i in grp.person_set.all():
+			# 		res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
+			# 		res.save()
+			# 	return HttpResponseRedirect("/results/%i" %res.id)
 
-		return render(response, "home_app/game.html", {"group": grp, "game": gme})
+	else: 
+		return render(request, "home_app/groups.html", {"group": grp, "gameName": gameName})
 
-	return render(response, "home_app/groups.html", {"group": grp})
-
-def result(response, resultid):
-	res = results.objects.get(id = resultid)
-	gme = res.game
+def result(request, groupID, gameID):
+	gme = game.objects.get(id = gameID)
 	grp = gme.group
+	results = gme.results
 
-	resdict = {}
-	splitbyplayer = res.stats.split(";")
-	splitcleaned = [i for i in splitbyplayer if i != ""]
-	for i in splitcleaned:
-		splitstats = i.split(",")
-		resdict[splitstats[0]] = [splitstats[1], splitstats[2]]
+	print(results)
 
-	print(resdict)
+	for player in results:
+		player["welldones"] = player["hands"].count(0)
 
-	return render(response, "home_app/results.html", {"result":res, "resdict": resdict, "group": grp})
+	return render(request, "home_app/results.html", {"game": gme, "results": gme.results, "group": grp})
 
 
 #Statistic Views-------------------------------------------------------------------------------------------------------------------------------------
+def groupStats (request, groupID):
+	grp = group.objects.get(id = groupID)
+	stats = {
+		"avgPlace": [],
+		"modePlace": [],
+		"numberQueens": [],
+		"numberWellDones": [],
+		"numberMoonshots": [],
+		"avgPointsGame": [],
+		"avgQueensGame": [],
+		"avgWellDonesGame": [],
+		"avgPointsHand": [],
+		"avgQueensHand": [],
+		"avgWellDonesHand": [],
+	}
 
-# def groupstats(response, groupid):
-# 	grp = group.objects.get(id = groupid)
+	numberGames = len(grp.stats[0]["placings"])
+	numberHands = len(grp.stats[0]["hands"])
 
-# 	if grp in response.user.group.all():
-# 		for person in grp.person_set.all():
-# 			pstats = person.stats
-# 			personstatsclean = pstats.split(";")
-# 			personstatsclean = personstatsclean.remove("")
+	for player in grp.stats:
+		print(player)
+		sumPoints = sum(player["hands"])
+		print(player["placings"])
 
+		stats["avgPlace"].append({"name": player["name"], "value": round(sum(player["placings"]) / numberGames, 2)})
+		stats["modePlace"].append({"name": player["name"], "value": 0})
+		stats["numberQueens"].append({"name": player["name"], "value": player["queens"]})
+		stats["numberWellDones"].append({"name": player["name"], "value": player["hands"].count(0)})
+		stats["numberMoonshots"].append({"name": player["name"], "value": player["moonshots"]})
+		stats["avgPointsGame"].append({"name": player["name"], "value": round(sumPoints / numberGames, 2)})
+		stats["avgQueensGame"].append({"name": player["name"], "value": round(player["queens"] / numberGames, 2)})
+		stats["avgWellDonesGame"].append({"name": player["name"], "value": round(player["hands"].count(0) / numberGames)})
+		stats["avgPointsHand"].append({"name": player["name"], "value": round(sumPoints / numberHands, 2)})
+		stats["avgQueensHand"].append({"name": player["name"], "value": round(player["queens"] / numberHands, 2)})
+		stats["avgWellDonesHand"].append({"name": player["name"], "value": round(player["hands"].count(0) / numberHands, 2)})
 
+	return render(request, "home_app/groupStatistics.html", {"group": grp, "stats": stats})
 
+def playerGroupStats(request, groupID, playerName):
+	grp = group.objects.get(id = groupID)
+	playerIndex = next((i for i, p in enumerate(grp.stats) if p["name"] == playerName), None)
+	print(grp.stats)
+	player = grp.stats[playerIndex]
 
-# 	return render(groupstats.html)
+	numberGames = len(player["placings"])
+	numberHands = len(player["hands"])
+	sumPoints = sum(player["hands"])
 
-# def personstats(response, personid):
-# 	return render(personstats.html)
+	stats = {
+		"name": playerName,
+		"avgPlace": round(sum(player["placings"]) / numberGames, 2),
+		"modePlace": 0,
+		"numberQueens": player["queens"],
+		"numberWellDones": player["hands"].count(0),
+		"numberMoonshots": player["moonshots"],
+		"avgPointsGame": round(sumPoints / numberGames, 2),
+		"avgQueensGame": round(player["queens"] / numberGames, 2),
+		"avgWellDonesGame": round(player["hands"].count(0) / numberGames),
+		"avgPointsHand": round(sumPoints / numberHands, 2),
+		"avgQueensHand": round(player["queens"] / numberHands, 2),
+		"avgWellDonesHand": round(player["hands"].count(0) / numberHands, 2),
+	}
+
+	return render(request, "home_app/playerGroupStats.html", {"group": grp, "stats": stats})
+
 
 #Create---------------------------------------------------------------------------------------------------------------------------------------------
 
-def create(response):
-	if response.user.is_authenticated:
-		username = response.user.username
-	if response.method == "POST":
-		if response.POST.get("startgroup"):
-			#Group name cannot be blank
-			if not response.POST.get("newgroup"):
-				messages.error(response, "Group name cannot be blank")
-				return render(response, "home_app/create.html", {})
-			#No duplicate group names
-			if response.user.group.filter(name__exact = response.POST.get("newgroup")).exists():
-				messages.error(response, "Group name already used, please choose a new one")
-				return render(response, "home_app/create.html", {})
-			if int(response.POST.get('maxpoints')) < 13:
-				messages.error(response, 'Max points must be 13 or greater')
-				return render(response, "home_app/create.html", {})
+def create(request):
+	if request.user.is_authenticated:
+		username = request.user.username
 
-			n = response.POST.get("newgroup")
-			mp = int(response.POST.get("maxpoints"))
-			newgroup = group(name=n, maxpoints = mp, user = response.user, owner = username)
+		if request.method == "POST":
+			data = request.POST.get("formData")
+			formData = json.loads(data)
+			# dataDict = ast.literal_eval(data)
+			print(formData["players"])
+			print(formData["name"])
+			print(type(formData["maxPoints"]))
+
+			stats = []
+
+			for player in formData["players"]:
+				info = {
+					"name": player,
+					"hands": [],
+					"queens": 0,
+					"moonshots": 0,
+					"placings": []
+				}
+				stats.append(info)
+
+			newgroup = group(
+				name = formData["name"],
+				maxpoints = formData["maxPoints"],
+				user = request.user,
+				owner = username,
+				stats = stats
+			)
+
 			newgroup.save()
-			return HttpResponseRedirect("/groups/addplayers/%i" %newgroup.id)
 
-	return render(response, "home_app/create.html", {})
+			# Create new person if they do not exist yet
+			# newP = request.POST.get("newplayer")
+			# if request.user.person.filter(name__exact=newP).exists() == False:
+			# 	new = grp.person_set.create(name=newP, points = 0, placing = 1, user = request.user)
+			# 	grp.person_set.add(new)
+			# 	return render(request, "home_app/addplayers.html", {"group": grp})
+			# else:
+			# 	existing = userplayers.get(name__exact=newP)
+			# 	grp.person_set.add(existing)
+			# 	return render(request, "home_app/addplayers.html", {"group": grp})
 
-def addplayers(response, id):
-	grp = group.objects.get(id = id)
-	userplayers = response.user.person.all()
+			# Add some validation here eventually
 
-	if response.POST.get("addplayer"):
-		if not response.POST.get("addplayer"):
-			messages.error(response, 'Name cannot be blank.')
-			return HttpResponseRedirect("/groups/addplayers/%i" %grp.id)
-		else:
-			newP = response.POST.get("newplayer")
-			if response.user.person.filter(name__exact=newP).exists() == False:
-				new = grp.person_set.create(name=newP, points = 0, placing = 1, user = response.user)
-				grp.person_set.add(new)
-				return render(response, "home_app/addplayers.html", {"group": grp})
-			else:
-				existing = userplayers.get(name__exact=newP)
-				grp.person_set.add(existing)
-				return render(response, "home_app/addplayers.html", {"group": grp})
-	elif response.POST.get("createGroup"):
-		count = 0
-		for i in grp.person_set.all():
-			count += 1
-		if count < 3:
-			messages.error(response, 'Group must have at least 3 players.')
-			return render(response, "home_app/addplayers.html", {"group": grp})
-		else:
+			# return HttpResponseRedirect("/groups/%i/%i" % (grp.id, newgame.id))
+
 			return HttpResponseRedirect("/groups")
 
-	return render(response, "home_app/addplayers.html", {"group": grp, "players": userplayers})
+	return render(request, "home_app/create.html", {})
+
 
 #People-------------------------------------------------------------------------------------------------------------------------------------
 
-def people(response):
+def people(request):
 	#Checking if user is authenitcated
-	if response.user.is_authenticated == True:
+	if request.user.is_authenticated == True:
 		allplayers = []
 
-		for person in response.user.person.all():
+		for person in request.user.person.all():
 			allplayers.append(person)
 
-		if response.POST.get("delete"):
+		if request.POST.get("delete"):
 			for i in allplayers:
-				if response.POST.get("d" + str(i.id)) == "clicked":
+				if request.POST.get("d" + str(i.id)) == "clicked":
 					i.delete()
 
-		return render(response, "home_app/people.html", {})
+		return render(request, "home_app/people.html", {})
 
-	return render(response, "home_app/people.html", {})
+	return render(request, "home_app/people.html", {})
 
 
 #----------------------------------------------------------------------------------------------------------------------------------#
@@ -349,3 +327,105 @@ def people(response):
 # 		{% endfor %}
 # 	</ul>
 # {% endif %}
+
+
+		# if response.method == "POST":
+		# 	if response.POST.get("save"):
+		# 		#Checking if points add up to 13
+		# 		countpoints = 0
+		# 		for person in grp.person_set.all():
+		# 			if not response.POST.get("p" + str(person.id)):
+		# 				countpoints += 0
+		# 			else:
+		# 				countpoints += int(response.POST.get("p" + str(person.id)))
+		# 		if countpoints != 13:
+		# 			messages.error(response, 'Total hearts for players must add up to 13.')
+		# 			return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
+
+		# 		#Checking if only one queen box is checked
+		# 		countqueen = 0
+		# 		for person in grp.person_set.all():
+		# 			if response.POST.get("c" + str(person.id)) == "clicked":
+		# 				countqueen += 1
+		# 		if countqueen > 1:
+		# 			messages.error(response, 'Only one queen box can be selected')
+		# 			return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
+		# 		elif countqueen < 1:
+		# 			messages.error(response, 'A queen box must be selected')
+		# 			return HttpResponseRedirect("/groups/%i/%i" % (grp.id, gme.id))
+
+		# 		#Adding points after input is valid
+		# 		for person in grp.person_set.all():
+		# 			# if response.POST.get("c" + str(person.id)) == "clicked":
+		# 			# 	person.points += 13
+		# 			# elif response.POST.get("p" + str(person.id)) == "":
+		# 			# 	person.points += 0
+		# 			# else:
+		# 			# 	person.points += int(response.POST.get("p" + str(person.id)))
+		# 			# person.save()
+
+		# 			tempstats = 0
+
+		# 			if response.POST.get("p" + str(person.id)) == "":
+		# 				person.points += 0
+		# 				tempstats = 0
+		# 			else:
+		# 				person.points += int(response.POST.get("p" + str(person.id)))
+		# 				tempstats = int(response.POST.get("p" + str(person.id)))
+
+		# 			if response.POST.get("c" + str(person.id)) == "clicked":
+		# 				person.points += 13
+		# 				tempstats += 13
+		# 				tempstats = str(tempstats) + "q"
+		# 			else:
+		# 				tempstats = str(tempstats)
+
+		# 			# tempstats += "." + str(grp.id) + "-" + str(gme.id) + ","
+		# 			# person.stats += tempstats
+
+		# 			person.save()
+
+		# 		#Ending the game when maxpoints is reached
+		# 		for person in grp.person_set.all():
+		# 			if person.points >= grp.maxpoints:
+		# 				gme.complete = True
+		# 				gme.save()
+		# 				for person in grp.person_set.all():
+		# 					for i in grp.person_set.all():
+		# 						if i.id == person.id:
+		# 							pass
+		# 						elif i.points < person.points:
+		# 							person.placing += 1
+		# 							person.save()
+		# 				#Adding stats to person
+		# 				# for person in grp.person_set.all():
+		# 				# 	person.stats += str(person.placing) + "." +str(grp.id) + "-" + str(gme.id) + ";"
+		# 				# 	person.save()
+		# 				#Creating results
+		# 				res = results.objects.create(game = gme, groupname = grp.name)
+		# 				for i in grp.person_set.all():
+		# 					res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
+		# 					res.save()
+		# 				return HttpResponseRedirect("/results/%i" %res.id)
+
+# def addplayers(request, id):
+# 	grp = group.objects.get(id = id)
+# 	userplayers = request.user.person.all()
+
+# 	if request.POST.get("addplayer"):
+# 		if not request.POST.get("addplayer"):
+# 			messages.error(request, 'Name cannot be blank.')
+# 			return HttprequestRedirect("/groups/addplayers/%i" %grp.id)
+# 		else:
+			
+# 	elif request.POST.get("createGroup"):
+# 		count = 0
+# 		for i in grp.person_set.all():
+# 			count += 1
+# 		if count < 3:
+# 			messages.error(request, 'Group must have at least 3 players.')
+# 			return render(request, "home_app/addplayers.html", {"group": grp})
+# 		else:
+# 			return HttpResponseRedirect("/groups")
+
+# 	return render(request, "home_app/addplayers.html", {"group": grp, "players": userplayers})

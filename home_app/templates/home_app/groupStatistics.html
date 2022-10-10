@@ -1,0 +1,116 @@
+{% extends "home_app/base.html" %}
+{% load custom_tags %}
+
+{% block title %}
+Hearts Hub - Groups
+{% endblock %}
+
+{% block content %}
+	<h1 class="page-title">{{group.name}}</h1>
+
+	<div class="container-center">
+		<a href= "{% url 'groupview' group.id %}" class="btn-submit" style="text-decoration: none; margin-top: 20px; display: inline-block;">Back to Group</a>
+	</div>
+
+	<h2 class="section-title">Overall Statistics</h2 class="section-title">
+	<h5 class="desc-small">These are the current statistics for this group. Links for individual players statistics can be found in the group page</h5 class="desc-small">
+	<div class="grid" style="grid-template-columns: 1fr 1fr;">
+		<div class="card">
+			<p>Average Placing</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgPlace %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Mode Placing</p>
+			<div class="line-break"></div>
+			{% for player in stats.modePlace %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Number of Queens</p>
+			<div class="line-break"></div>
+			{% for player in stats.numberQueens %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Number of Well-Dones</p>
+			<div class="line-break"></div>
+			{% for player in stats.numberWellDones %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Number of Moonshots</p>
+			<div class="line-break"></div>
+			{% for player in stats.numberMoonshots %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+	</div>
+
+	<h2 class="section-title">Statistics per Game</h2 class="section-title">
+	<h5 class="desc-small">These are the current statistics for this group per game</h5 class="desc-small">
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+		<div class="card">
+			<p>Average Points per Game</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgPointsGame %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Average Queens per Game</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgQueensGame %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Average Well-Dones per Game</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgWellDonesGame %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+	</div>
+
+	<h2 class="section-title" class="section-title">Statistics per Hand</h2 class="section-title">
+	<h5 class="desc-small">These are the current statistics for this group per hand</h5>
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+		<div class="card">
+			<p>Average Points per Hand</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgPointsHand %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Average Queens per Hand</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgQueensHand %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+
+		<div class="card">
+			<p>Average Well-Dones per Hand</p>
+			<div class="line-break"></div>
+			{% for player in stats.avgWellDonesHand %}
+				<p>{{player.name}} - {{player.value}}</p>
+			{% endfor %}
+		</div>
+	</div>
+
+{% endblock %}
