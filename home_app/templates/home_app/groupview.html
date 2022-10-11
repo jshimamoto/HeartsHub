@@ -17,15 +17,19 @@ Hearts Hub - Groups
 
 	<h2 class="section-title">Players</h2 class="section-title">
 	<h5 class="desc-small">Click here to view individual statistics of players</h5 class="desc-small">
-	<div class="grid">
-		{% for player in group.stats %}
-			<a class="card-link" href="{% url 'playerGroupStats' group.id player.name %}">
-				<div class="card">
-					<p style="text-align: center; font-weight: bold">{{player.name}}</p>
-				</div>
-			</a>
-		{% endfor %}
-	</div>
+	{% if group.game_set.all %}
+		<div class="grid">
+			{% for player in group.stats %}
+				<a class="card-link" href="{% url 'playerGroupStats' group.id player.name %}">
+					<div class="card">
+						<p style="text-align: center; font-weight: bold">{{player.name}}</p>
+					</div>
+				</a>
+			{% endfor %}
+		</div>
+	{% else %}
+		<p>You must play at least one game to get this view</p>
+	{% endif %}
 
 	<h2 class="section-title" class="section-title">Games</h2 class="section-title">
 	<h5 class="desc-small">Click a game to view the results</h5>

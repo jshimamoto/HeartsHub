@@ -1,45 +1,11 @@
 <html>
 <head>
-
+	{% load static %}
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-	{% load static %}
-	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
-	<link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 	
-	<style type="text/css">
-		.sidenav {
-			height: 100%;
-			width: 160px;
-			position: fixed;
-			z-index: 1;
-			top: 0;
-			left: 0;
-			background-color: #8B0000;
-			overflow-x: hidden;
-			padding-top: 20px;
-		}
-
-		.sidenav a {
-			padding: 6px 8px 6px 16px;
-			text-decoration: none;
-			color: #A9A9A9;
-			font-size: 30px;
-			display: block;
-			font-family: Corbel;
-		}
-
-		.sidenav a:hover{
-			color: #f1f1f1;
-		}
-
-		.home_app{
-			margin-left: 160px;
-			padding: 6px 10px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 	<title>
 		{% block title %}
 		Register
@@ -48,23 +14,22 @@
 </head>
 
 <body>
-	<div class="sidenav">
-		<a href="/">Home</a>
-		<a href="/groups">Groups</a>
-		<a href="/create">Create</a>
-		<a href="/people">Players</a>
-		<a href="/login">Log in</a>
+	<div class="header">
+		<img src="{% static 'home_app/images/logo.png' %}" alt="logo" class="logo">
+		<!-- <p>Hearts Hub</p> -->
 	</div>
 
-	<div id="content", name="content", class="home_app">
-		{% load crispy_forms_tags %}
-
-		<h1>Create an Account</h1>
-		<form method="POST" class = "form-group">
-			{% csrf_token %}
-			{{ form|crispy }}
-			<button type="submit" class="btn btn-primary">Register</button>
-		</form>
+	<div class="center">
+		<h1 class="page-title">Create an Account</h1>
+		<div class="card" style="margin-top: 30px; text-align: center;">
+			<form method="POST" class="form-group">
+				{% csrf_token %}
+				{{ form }}
+				<br>
+				<button type="submit" class="btn-submit">Register</button>
+			</form>
+			<a href="/" class="btn-submit">Home</a>
+		</div>
 	</div>
 
 	<div class="home_app">

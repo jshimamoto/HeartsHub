@@ -11,9 +11,11 @@ Hearts Hub - Players
 	<h5 class="desc-small">Click on a player to view statistics and other information</h5>
 	<div class="grid">
 		{% for player in user.person.all %}
-			<div class="card">
-				<p style="text-align: center">{{player.name}}</p>
-			</div>
+			<a class="card-link" href="{% url 'playerStatistics' player.name %}">
+				<div class="card">
+					<p style="text-align: center">{{player.name}}</p>
+				</div>
+			</a>
 		{% endfor %}
 	</div>
 

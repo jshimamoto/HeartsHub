@@ -57,16 +57,6 @@ class game(models.Model):
 	def __str__(self):
 		return self.name
 
-# Don't really need this because there will be an JS object containing all the data. Each game doesn't need to save points cause every game should be finished 
-# with end game and start with everyone at zero. Data passed to person model will be done through that object
-#
-# class player(models.Model) {
-# 	game = models.ForeignKey(game, on_delete = models.CASCADE)
-# 	hands = models.CharField() #Append this to person.points after game is over
-# 	points = models.IntegerField(default=0)
-# 	personID = models.CharField() #Use the ID saved here to retrieve person and append hands data to their stats
-# }
-
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 

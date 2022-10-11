@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.contrib.auth.models import User
-import json
+import json, statistics
 
 #Home---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -91,6 +91,14 @@ def game_(request, groupid, gameNumber):
 				grp.stats[index]["moonshots"] += player["moonshots"]
 				grp.save()
 
+				person = request.user.person.filter(name__exact = player["name"])[0]
+				person.stats["hands"].extend(player["hands"])
+				person.stats["placings"].append(player["placing"])
+				person.stats["queens"] += player["queens"]
+				person.stats["moonshots"] += player["moonshots"]
+				person.save()
+				print(person.stats["hands"])
+
 			return HttpResponseRedirect("/groups/%i/results/%i" % (grp.id, gameID))
 
 		return render(request, "home_app/game.html", {"group": grp, "gameName": gameName})
@@ -159,7 +167,7 @@ def groupStats (request, groupID):
 		print(player["placings"])
 
 		stats["avgPlace"].append({"name": player["name"], "value": round(sum(player["placings"]) / numberGames, 2)})
-		stats["modePlace"].append({"name": player["name"], "value": 0})
+		stats["modePlace"].append({"name": player["name"], "value": statistics.mode(player["placings"])})
 		stats["numberQueens"].append({"name": player["name"], "value": player["queens"]})
 		stats["numberWellDones"].append({"name": player["name"], "value": player["hands"].count(0)})
 		stats["numberMoonshots"].append({"name": player["name"], "value": player["moonshots"]})
@@ -185,7 +193,7 @@ def playerGroupStats(request, groupID, playerName):
 	stats = {
 		"name": playerName,
 		"avgPlace": round(sum(player["placings"]) / numberGames, 2),
-		"modePlace": 0,
+		"modePlace": statistics.mode(player["placings"]),
 		"numberQueens": player["queens"],
 		"numberWellDones": player["hands"].count(0),
 		"numberMoonshots": player["moonshots"],
@@ -199,6 +207,30 @@ def playerGroupStats(request, groupID, playerName):
 
 	return render(request, "home_app/playerGroupStats.html", {"group": grp, "stats": stats})
 
+def playerStatistics(request, playerName):
+	player = request.user.person.filter(name__exact = playerName)[0]
+
+	numberGames = len(player.stats["placings"])
+	numberHands = len(player.stats["hands"])
+	sumPoints = sum(player.stats["hands"])
+
+	stats = {
+		"name": playerName,
+		"avgPlace": round(sum(player.stats["placings"]) / numberGames, 2),
+		"modePlace": statistics.mode(player.stats["placings"]),
+		"numberQueens": player.stats["queens"],
+		"numberWellDones": player.stats["hands"].count(0),
+		"numberMoonshots": player.stats["moonshots"],
+		"avgPointsGame": round(sumPoints / numberGames, 2),
+		"avgQueensGame": round(player.stats["queens"] / numberGames, 2),
+		"avgWellDonesGame": round(player.stats["hands"].count(0) / numberGames),
+		"avgPointsHand": round(sumPoints / numberHands, 2),
+		"avgQueensHand": round(player.stats["queens"] / numberHands, 2),
+		"avgWellDonesHand": round(player.stats["hands"].count(0) / numberHands, 2),
+	}
+
+	return render(request, "home_app/playerStatistics.html", {"stats": stats})
+
 
 #Create---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -209,10 +241,6 @@ def create(request):
 		if request.method == "POST":
 			data = request.POST.get("formData")
 			formData = json.loads(data)
-			# dataDict = ast.literal_eval(data)
-			print(formData["players"])
-			print(formData["name"])
-			print(type(formData["maxPoints"]))
 
 			stats = []
 
@@ -233,8 +261,23 @@ def create(request):
 				owner = username,
 				stats = stats
 			)
-
 			newgroup.save()
+
+			for player in formData["players"]:
+				if request.user.person.filter(name__exact = player).exists() == False:
+					newPerson = person(
+						name = player,
+						stats = {
+							"hands": [],
+							"queens": 0,
+							"moonshots": 0,
+							"placings": []
+						},
+						user = request.user
+						)
+					newPerson.save()
+					newPerson.group.add(newgroup)
+
 
 			# Create new person if they do not exist yet
 			# newP = request.POST.get("newplayer")
@@ -253,7 +296,7 @@ def create(request):
 
 			return HttpResponseRedirect("/groups")
 
-	return render(request, "home_app/create.html", {})
+	return render(request, "home_app/create.html", {"people": request.user.person.all()})
 
 
 #People-------------------------------------------------------------------------------------------------------------------------------------

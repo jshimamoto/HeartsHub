@@ -12,26 +12,37 @@ Hearts Hub - Create Group
 	<h2 class="section-title">Group Information</h2>
 	<h5 class="desc-small">Enter group information here. You will be able to edit the maximum points later if needed</h5>
 	
-	<label for="groupname">Group Name</label>
-	<input type="text" name="newgroup" id="groupname" placeholder="Enter name here">
-	<br>
+	<div class="container-center">
+		<label for="groupname">Group Name</label>
+		<input type="text" name="newgroup" id="groupname" placeholder="Enter name here">
+		<br>
 
-	<label for="maxpoints">Maximum Points for Game</label>
-	<input type="number" step='1' name="maxpoints" value='50' id="maxpoints">
-	<br>
+		<label for="maxpoints">Maximum Points for Game</label>
+		<input type="number" step='1' name="maxpoints" value='50' id="maxpoints">
+		<br>
+	</div>
 
 	<h2 class="section-title">Players</h2>
 	<h5 class="desc-small">Add players to the game here. There must be at least 3 players to create the group and a player name cannot be blank. Click on a player after adding them to remove</h5>
 	<div class="grid" id="players">
 	</div>
 
-	<input type="text" name="newPlayer" id="newPlayer" placeholder="Enter name of new player">
+	<div class="container-center">
+	<input type="text" name="newPlayer" id="newPlayer" placeholder="Enter name of new player" list="people">
+	<datalist id="people">
+		{% for person in people %}
+			<option>{{person.name}}</option>
+		{% endfor %}
+	</datalist>
 	<button class="btn-submit" type="button" onclick="addPlayer()">Add Player</button>
+	</div>
 
 	<div class="line-break"></div>
 
 	<textarea style="display: none;" id="formData" name="formData"></textarea>
-	<button type="button", name="startgroup", value="startgroup" class="btn-submit" onclick="send()">Create Group</button>
+	<div class="container-center">
+		<button type="button", name="startgroup", value="startgroup" class="btn-submit" onclick="send()">Create Group</button>
+	</div>
 </form>
 
 <script type="text/javascript">

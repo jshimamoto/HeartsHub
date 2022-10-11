@@ -29,7 +29,7 @@ body::before {
 }
 
 .video {
-	position: absolute;
+	position: relative;
 	margin: auto;
 	width: 700px;
 	height: 480px;
@@ -136,12 +136,12 @@ p {
 
 .page-title {
 	text-align: center;
-    font-size: 50px;
-    margin-left: -180px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    display: block;
-    position: relative;
+	font-size: 50px;
+	margin-left: -180px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	display: block;
+	position: relative;
 }
 
 .section-title {
@@ -149,14 +149,15 @@ p {
     padding: 20px 0px 5px 20px;
     margin: 5px 0px;
     font-size: 30px;
+    margin-right: 20px;
 }
 
 .sub-section-title {
 	border-bottom: solid lightgray 1px;
-    padding: 0px 0px 5px 10px;
-    margin: 20px 0px;
-    font-size: 20px;
-    width: 90%;
+	padding: 0px 0px 5px 10px;
+	margin: 20px 0px;
+	font-size: 20px;
+	width: 90%;
 	position: relative;
 	color: red;
 	font-family: Corbel;
@@ -366,6 +367,17 @@ input[type='text'] {
 	font-family: Helvetica, Arial, monospace;
 }
 
+input[type='text']:focus {
+	margin: 10px 0px;
+	padding: 10px 20px;
+	border-color: red;
+	outline: none;
+	box-shadow: 0 0 10px red;
+	border-radius: 10px;
+	width: 200px;
+	font-family: Helvetica, Arial, monospace;
+}
+
 input[type='number'] {
 	margin: 10px 0px;
 	padding: 7px 7px;
@@ -376,6 +388,21 @@ input[type='number'] {
 	color: red;
 	font-weight: bold;
 	border: 2px solid red;
+	text-align: center;
+}
+
+input[type='number']:focus {
+	margin: 10px 0px;
+	padding: 7px 7px;
+	border-radius: 10px;
+	border-color: red;
+	outline: none;
+	box-shadow: 0 0 10px red;
+	width: 50px;
+	font-family: Helvetica, Arial, monospace;
+	font-size: 15px;
+	color: red;
+	font-weight: bold;
 	text-align: center;
 }
 

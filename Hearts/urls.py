@@ -24,5 +24,13 @@ urlpatterns = [
     path('register/', v.register, name = 'register'),
     path('', include('home_app.urls')),
     path('', include("django.contrib.auth.urls")),
+    # path(
+    #     'login/',
+    #     v.LoginView.as_view(
+    #         template_name="login.html",
+    #         authentication_form=UserLoginForm
+    #         ),
+    #     name='login'
+    # )
     #path("favicon.ico", RedirectView.as_view(url=staticfiles_storage.url("favicon.ico"))),
     ]

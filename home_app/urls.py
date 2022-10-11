@@ -12,5 +12,6 @@ urlpatterns = [
 	path('groups/<int:groupID>/results/<int:gameID>', views.result, name = 'result'),
 	path('groups/<int:groupID>/stats', views.groupStats, name = 'groupStats'),
 	path('groups/<int:groupID>/<str:playerName>', views.playerGroupStats, name = 'playerGroupStats'),
-	path('people/', views.people, name = 'people')
+	path('people/', views.people, name = 'people'),
+	path('people/<str:playerName>', views.playerStatistics, name = 'playerStatistics')
 ]
