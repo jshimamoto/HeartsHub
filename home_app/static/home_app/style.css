@@ -17,10 +17,14 @@ body::before {
 }
 
 .content {
-	margin-left: 160px;
+	padding: 10px 30px;
+	margin: 50px 0 0 0;
+}
+
+.content-home {
 	margin-top: 50px;
-	padding-bottom: 30px;
-	padding-left: 20px;
+	position: relative;
+	text-align: center;
 }
 
 .content:after {
@@ -45,28 +49,30 @@ body::before {
 
 /*Navbar -----------------------------------------------------------------------------------------------------*/
 .nav {
-	height: 100%;
-	width: 160px;
 	margin-top: 50px;
 	position: fixed;
 	z-index: 1;
 	top: 0;
 	left: 0;
-	background-color: #8B0000;
+	background-color: white;
 	overflow-x: hidden;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 3px 3px 3px gray;
+	text-align: center;
 }
 
 .nav a {
-	padding: 6px 8px 6px 16px;
+	padding: 5px 40px;
 	text-decoration: none;
-	color: #A9A9A9;
+	color: black;
 	font-size: 30px;
 	display: block;
 	font-family: Corbel;
 }
 
 .nav a:hover{
-	color: #f1f1f1;
+	color: white;
+	background-color: red;
 }
 
 /*Header -----------------------------------------------------------------------------------------------------*/
@@ -80,6 +86,7 @@ body::before {
 	z-index: 1;
 	/*border-bottom: 3px solid whitesmoke;*/
 	box-shadow: 0px 1px 4px gray;
+	overflow: auto;
 }
 
 .header p {
@@ -94,10 +101,18 @@ body::before {
 
 .logo {
 	height: 45px;
-	margin-left: auto;
-	margin-right: auto;
-	display: block;
+	margin: auto;
+	display: inline-block;
 	margin-top: 2px;
+	left: 0;
+	right: 0;
+	position: absolute;
+}
+
+.menu {
+	float: left;
+	padding: 3px 10px;
+	display: inline-block;
 }
 
 /*Login Page -----------------------------------------------------------------------------------------------------*/
@@ -124,7 +139,6 @@ h3 {
 	color: red;
 	font-family: Corbel;
 	text-align: center;
-	margin-right: 180px;
 	font-size: 22px;
 }
 
@@ -137,7 +151,6 @@ p {
 .page-title {
 	text-align: center;
 	font-size: 50px;
-	margin-left: -180px;
 	margin-top: 0px;
 	margin-bottom: 0px;
 	display: block;
@@ -191,13 +204,12 @@ p {
 
 .container-center {
 	text-align: center;
-	margin-left: -180px;
 }
 
 .link {
 	background-color: whitesmoke;
 	border-radius: 10px;
-	box-shadow: 5px 5px 5px gray;
+	box-shadow: 0 0 5px gray;
 	padding: 20px 30px;
 	font-family: sans-serif;
 	font-weight: bold;
@@ -211,13 +223,33 @@ p {
 	border-radius: 10px;
 	padding: 20px 30px;
 	font-family: sans-serif;
-	box-shadow: 10px 10px 5px red;
+	box-shadow: 0 0 10px red;
 	position: relative;
 	bottom: 5px;
 	right: 5px;
 	cursor: pointer;
 	color: red;
 	text-decoration: none;
+}
+
+.message {
+	color: black;
+	font-style: italic;
+	font-size: 15px;
+	font-family: monospace;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+.error {
+	background-color: red;
+	color: white;
+	font-family: sans-serif;
+	font-size: 15px;
+	padding: 15px 30px;
+	margin: 10px 0px;
+	border-radius: 10px;
 }
 
 /*Forms --------------------------------------------------------------------------------------------------------------------------*/

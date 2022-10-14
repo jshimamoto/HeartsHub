@@ -21,7 +21,9 @@ def groups(request):
 		username = request.user.username
 		grp = request.user.group.all()
 		sharedgroups = request.user.profile.sharedgroups.all()
-		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups})
+		groupsShared = filter(lambda group: group.shared == True, grp)
+		print(groupsShared)
+		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups, "groupsShared": groupsShared})
 	return render(request, "home_app/groups.html")
 
 def groupview(request, id):
@@ -259,7 +261,8 @@ def create(request):
 				maxpoints = formData["maxPoints"],
 				user = request.user,
 				owner = username,
-				stats = stats
+				stats = stats,
+				rotation = formData["rotation"]
 			)
 			newgroup.save()
 

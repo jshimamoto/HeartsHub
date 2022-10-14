@@ -60,7 +60,7 @@ Hearts Hub - Groups
 	<h5 class="desc-small">These are the current statistics for this group per game</h5 class="desc-small">
 	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
 		<div class="card">
-			<p>Average Points per Game</p>
+			<p>Average Hearts per Game</p>
 			<div class="line-break"></div>
 			{% for player in stats.avgPointsGame %}
 				<p>{{player.name}} - {{player.value}}</p>
@@ -89,7 +89,7 @@ Hearts Hub - Groups
 	<h5 class="desc-small">These are the current statistics for this group per hand</h5>
 	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
 		<div class="card">
-			<p>Average Points per Hand</p>
+			<p>Average Hearts per Hand</p>
 			<div class="line-break"></div>
 			{% for player in stats.avgPointsHand %}
 				<p>{{player.name}} - {{player.value}}</p>

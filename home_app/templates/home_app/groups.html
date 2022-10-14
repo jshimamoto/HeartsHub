@@ -35,6 +35,11 @@ Hearts Hub - Groups
 					</div>
 				</a>
 			{% endif %}
+			{% if not groupsShared %}
+				<div class="container-center">
+					<p class="message">You currently do not have any groups.<br>You can create groups in the create tab</p>
+				</div>
+			{% endif %}
 		{% endfor %}
 	</div>
 
@@ -55,6 +60,11 @@ Hearts Hub - Groups
 			{% endif %}
 		{% endfor %}
 	</div>
+	{% if user.group.all %}
+		<div class="container-center">
+			<p class="message">You are currently not sharing groups with other users</p>
+		</div>
+	{% endif %}
 
 	<h4 class="sub-section-title">Shared with Me</h4>
 	{% if sharedgroups %}
@@ -70,7 +80,9 @@ Hearts Hub - Groups
 				{% endfor %}
 		</div>
 	{% else %}
-		<p>You currently do not have any groups shared with you</p>
+		<div class="container-center">
+			<p class="message">You currently do not have any groups shared with you</p>
+		</div>
 	{% endif %}
 
 {% endblock %}

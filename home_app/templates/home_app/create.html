@@ -10,7 +10,7 @@ Hearts Hub - Create Group
 <form method="post" action="#" id="form">
 	{% csrf_token %}
 	<h2 class="section-title">Group Information</h2>
-	<h5 class="desc-small">Enter group information here. You will be able to edit the maximum points later if needed</h5>
+	<h5 class="desc-small">Enter group information here. You will be able to edit the maximum points later if needed. 50 points is the recommended point limit</h5>
 	
 	<div class="container-center">
 		<label for="groupname">Group Name</label>
@@ -20,21 +20,35 @@ Hearts Hub - Create Group
 		<label for="maxpoints">Maximum Points for Game</label>
 		<input type="number" step='1' name="maxpoints" value='50' id="maxpoints">
 		<br>
+		<div id="groupValidate" style="display: inline-block;"></div>
 	</div>
 
 	<h2 class="section-title">Players</h2>
 	<h5 class="desc-small">Add players to the game here. There must be at least 3 players to create the group and a player name cannot be blank. Click on a player after adding them to remove</h5>
-	<div class="grid" id="players">
-	</div>
+	<div class="grid" id="players"></div>
 
 	<div class="container-center">
-	<input type="text" name="newPlayer" id="newPlayer" placeholder="Enter name of new player" list="people">
-	<datalist id="people">
-		{% for person in people %}
-			<option>{{person.name}}</option>
-		{% endfor %}
-	</datalist>
-	<button class="btn-submit" type="button" onclick="addPlayer()">Add Player</button>
+		<input type="text" name="newPlayer" id="newPlayer" placeholder="Enter name of new player" list="people">
+		<datalist id="people">
+			{% for person in people %}
+				<option>{{person.name}}</option>
+			{% endfor %}
+		</datalist>
+		<button class="btn-submit" type="button" onclick="addPlayer()">Add Player</button>
+		<br>
+		<div id="playerValidate" style="display: inline-block;"></div>
+	</div>
+
+	<h2 class="section-title">Rotation</h2>
+	<h5 class="desc-small">You can set the rotation for card passing here. If you want to use the standard "Left, Right, Across, Keep" rotation, click the "Standard" button</h5>
+	<div class="grid" id="rotation"></div>
+
+	<div class="container-center">
+		<input type="text" name="newStep" id="newStep" placeholder="Enter step of rotation">
+		<button class="btn-submit" type="button" onclick="addStep()">Add Step</button>
+		<br>
+		<button class="btn-submit" type="button" onclick="standard()">Standard</button>
+		<div id="rotationValidate" style="display: inline-block;"></div>
 	</div>
 
 	<div class="line-break"></div>
@@ -47,43 +61,116 @@ Hearts Hub - Create Group
 
 <script type="text/javascript">
 	let players = [];
+	let rotation = [];
+
+	const fade = (element) => {
+		let opacity = 100;
+		const duration = setInterval(() => {
+			if (opacity <= 0.1) {
+				clearInterval(duration);
+				element.remove();
+			}
+			element.style.opacity = `${opacity}%`;
+			opacity -= 1;
+		}, 50)
+	}
 
 	const addPlayer = () => {
 		let newPlayer = document.createElement('p')
 		newPlayer.setAttribute('class', 'card')
-		newPlayer.setAttribute('onclick', 'removePlayer()')
+		newPlayer.setAttribute('onclick', 'remove("players")')
 		newPlayer.setAttribute('style', 'cursor: pointer; text-align: center; padding: 10px 10px; font-weight: bold')
 		let playerName = document.getElementById("newPlayer")
 		newPlayer.innerHTML = `${playerName.value}`
 
-		players.push(playerName.value)
 		document.getElementById("players").appendChild(newPlayer)
 		playerName.value = ""
-		console.log(players)
 	}
 
-	const removePlayer = () => {
-		let players = document.getElementById("players")
+	const remove = (parent) => {
+		let p = document.getElementById(parent)
 		document.addEventListener('click', function(e) {
-			players.removeChild(e.target)
+			p.removeChild(e.target)
 			e.target.remove()
-		}, {once: true}) 
+		}, {once: true})
+
+	}
+
+	const addStep = () => {
+		let newStep = document.createElement('p')
+		newStep.setAttribute('class', 'card')
+		newStep.setAttribute('onclick', 'remove("rotation")')
+		newStep.setAttribute('style', 'cursor: pointer; text-align: center; padding: 10px 10px; font-weight: bold')
+		let stepName = document.getElementById("newStep")
+		newStep.innerHTML = `${stepName.value}`
+
+		document.getElementById("rotation").appendChild(newStep)
+		stepName.value = ""
+	}
+
+	const standard = () => {
+		const steps = ["Left", "Right", "Across", "Keep"]
+		for (let i = 0; i < steps.length; i++) {
+			let newStep = document.createElement('p')
+			newStep.setAttribute('class', 'card')
+			newStep.setAttribute('onclick', 'remove("rotation")')
+			newStep.setAttribute('style', 'cursor: pointer; text-align: center; padding: 10px 10px; font-weight: bold')
+			newStep.innerHTML = steps[i]
+
+			document.getElementById("rotation").appendChild(newStep)
+		}
+	}
+
+	const validate = (data) => {
+		let valid = true;
+		if (data.name == "" || data.maxPoints <= 0) {
+			valid = false
+			let groupError = document.createElement('p');
+			groupError.setAttribute('class', 'error');
+			groupError.innerHTML = `Must input a group name and have a point count greater than zero`;
+
+			document.getElementById("groupValidate").appendChild(groupError);
+			fade(groupError)
+		}
+
+		if (data.players.length < 3) {
+			valid = false
+			let playerError = document.createElement('p');
+			playerError.setAttribute('class', 'error');
+			playerError.innerHTML = `There must be at least 3 players to create a group`;
+
+			document.getElementById("playerValidate").appendChild(playerError);
+			fade(playerError)
+		}
+
+		return valid
 	}
 
 	const send = () => {
+		let playerElements = document.getElementById("players").children
+		for (let i = 0; i < playerElements.length; i++) {
+			players.push(playerElements[i].innerHTML)
+		}
+
+		let rotationSteps = document.getElementById("rotation").children
+		for (let i = 0; i < rotationSteps.length; i++) {
+			rotation.push(rotationSteps[i].innerHTML)
+		}
+
 		let groupData = {
 			name: document.getElementById("groupname").value,
 			maxPoints: Number(document.getElementById("maxpoints").value),
-			players: players
+			players: players,
+			rotation: rotation
 		};
 
-		let groupDataText = JSON.stringify(groupData)
-		console.log(groupDataText)
-		const formData = document.getElementById("formData")
-		formData.value = groupDataText
-		console.log(formData.value)
-
-		document.getElementById("form").submit();
+		if (validate(groupData)) {	
+			let groupDataText = JSON.stringify(groupData)
+			const formData = document.getElementById("formData")
+			formData.value = groupDataText
+			console.log(groupData)
+			document.getElementById("form").submit();
+		}
 	}
 </script>
 

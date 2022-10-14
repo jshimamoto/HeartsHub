@@ -28,7 +28,9 @@ Hearts Hub - Groups
 			{% endfor %}
 		</div>
 	{% else %}
-		<p>You must play at least one game to get this view</p>
+		<div class="container-center">
+			<p class="message">You must play at least one game to get these views</p>
+		</div>
 	{% endif %}
 
 	<h2 class="section-title" class="section-title">Games</h2 class="section-title">
@@ -42,8 +44,15 @@ Hearts Hub - Groups
 			</a>
 		{% endfor %}
 	</div>
+	{% if not group.game_set.all %}
+		<div class="container-center">
+			<p class="message">You have not played any games in this group yet</p>
+		</div>
+	{% endif %}
 
-	<a href="{% url 'newGame' group.id gameNumber %}" class="btn-submit" style="font-size: 13px; margin-top: 20px; display: inline-block;">New Game</a>
+	<div class="container-center">
+		<a href="{% url 'newGame' group.id gameNumber %}" class="btn-submit" style="font-size: 13px; margin-top: 20px; display: inline-block;">New Game</a>
+	</div>
 
 	<form method="post" action="#">
 		{% csrf_token %}

@@ -12,6 +12,7 @@ class group(models.Model):
 	owner = models.CharField(max_length = 100)
 	shared = models.BooleanField(default = False)
 	stats = models.JSONField()
+	rotation = models.JSONField()
 
 	def __str__(self):
 		return self.name

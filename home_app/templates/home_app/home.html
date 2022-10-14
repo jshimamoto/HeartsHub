@@ -1,26 +1,107 @@
-{% extends "home_app/base.html" %}
+<!DOCTYPE html>
+<html>
+	<head>
+		{% load static %}
+		<link rel="shortcut icon" type="image/x-icon" href="{% static 'home_app/images/favicon.ico' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'home_app/style.css' %}">
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>
+			{% block title %}
+			Hearts Hub
+			{% endblock %}
+		</title>
+
+		<style type="text/css">
+			.intro {
+				background-color: white;
+				border-radius: 10px;
+				box-shadow: 0 0 10px red;
+				padding: 10px 30px;
+				margin-top: 30px;
+				margin-bottom: 20px;
+				font-family: Veranda;
+				font-weight: bold;
+				position: relative;
+				overflow: auto;
+				display: inline-block;
+			}
+
+		</style>
+	</head>
 {% load static %}
 
-{% block title %}
-	Hearts Hub
-{% endblock %}
-
-{% block content %}
-
-	<h1 class="title" style="margin-left: -180px;">Hearts Hub</h1>
-
-	<div class="card" style="margin-right: 20px; margin-top: 20px;padding: 20px; text-align: center; background-color: white;">
-		<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon" style="top: 0; left: 0">
-		<a style="width: 100%; height: 100%; font-family: Helvetica, Arial, sans-serif; font-weight: bold;">This is a WebApp intended to make the tracking of points for Hearts more streamlined and convenient. Log-in or register to access the full functionality and start tracking your points!</a>
-		<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon">
+<body>
+	<div class="header">
+		{% if request.user.is_authenticated %}
+			<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="red" fill="none" stroke-linecap="round" stroke-linejoin="round" style="padding-left: 10px; float: left; cursor: pointer;" onclick="toggleNav()">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<line x1="4" y1="6" x2="20" y2="6" />
+				<line x1="4" y1="12" x2="20" y2="12" />
+				<line x1="4" y1="18" x2="20" y2="18" />
+			</svg>
+		{% endif %}
+		<img src="{% static 'home_app/images/logo.png' %}" alt="logo" class="logo">
 	</div>
 
-	<br>
+	{% if request.user.is_authenticated %}
+		<nav class="nav" id="nav" style="display: none">
+			<a href="/">Home</a>				
+			<a href="/groups">Groups</a>
+			<a href="/create">Create</a>
+			<a href="/people">Players</a>
+			<a href="/logout">Log out</a>
+		</nav>
+	{% endif %}
 
-	<div class="video">
-		<iframe width="700" height="480" src="https://www.youtube.com/embed/3Pj7y_vOs7Q"></iframe>
+	<div class="content-home">
+
+		<div class="intro">
+			{% if request.user.is_authenticated %}
+				<p>Welcome, you are now logged in! Click the menu bar in the top left corner<br>
+					to navigate the full site.
+				</p>
+			{% else %}
+				<p>Welcome to the premier point tracking website for the greatest card game of all time, Hearts!<br>
+					Here, all the heavy lifting is done for you.
+					<br><br>
+					After you register an account, you can create groups for people you play with.<br>
+					From there, you can see statistics on you are doing and how to compare to the rest of the group.<br>
+					If you have a friend in the group that also has an account, you can share the group <br>
+					and they can have access to the group too!
+					<br><br>
+					If you are new to the game, watch the video below and learn how to play. Warning: You may never be able to stop.
+				</p>
+			{% endif %}
+		</div>
+		<br>
+
+		{% if not request.user.is_authenticated %}
+			<div class="link" style="margin: 20px 0px;">
+				<!-- <img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon" style="top: 0; left: 0"> -->
+				<a href="/login" style="font-family: Veranda, monospace; font-weight: bold; text-decoration: none">Log-in or register to access the full functionality and start tracking your points!</a>
+				<!-- <img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon"> -->
+			</div>
+		{% endif %}
+		<br>
+
+		<div class="video">
+			<iframe width="700" height="480" src="https://www.youtube.com/embed/3Pj7y_vOs7Q"></iframe>
+		</div>
+
+		<br>
 	</div>
 
-	<br>
+	<script type="text/javascript">
+		const toggleNav = () => {
+			let nav = document.getElementById("nav")
+			if (nav.style.display === "none") {
+				nav.style.display = "block"
+			} else {
+				nav.style.display = "none"
+			}
+		}
+	</script>
 
-{% endblock %}
+</body>

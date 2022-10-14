@@ -7,6 +7,14 @@ Hearts Hub - {{group.name}}
 {% block content %}
 	<h1 class="page-title">{{group.name}} - {{gameName}}</h1>
 
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr">
+		{% for step in group.rotation %}
+			<div class="card" id="rotation_{{step}}">
+				<p style="text-align: center; font-weight: bold;" class="rotation">{{step}}</p>
+			</div>
+		{% endfor %}
+	</div>
+
 	<h2 class="section-title">Total Points in Game</h2 class="section-title">
 	<h5 class="desc-small" style="margin-bottom: 10px">These are the current standings in the game. The maximum points set for this group is {{group.maxpoints}}</h5>
 	<div style="margin: 0px auto 10px auto; width: 90%"> 
@@ -41,6 +49,8 @@ Hearts Hub - {{group.name}}
 
 			<!-- <button type="submit", name="save", value="save" class="btn-submit">Save</button> -->
 			<button type="button" name="save" value="save" class="btn-submit" onclick="updateScores()">Confirm Points</button>
+			<br>
+			<div id="pointsValidate" style="display: inline-block;"></div>
 			<div class="line-break"></div>
 			<textarea id="formData" style="display: none;" name="formData"></textarea>
 			<button type="button" name="endgame" value="endgame" onclick="send()" class="btn-delete">End Game Now</button>
@@ -51,6 +61,8 @@ Hearts Hub - {{group.name}}
 	<script>
 		const maxPoints = Number("{{group.maxpoints}}")
 		const players = document.getElementsByClassName("player_data")
+		const rotation = document.getElementsByClassName("rotation")
+		let currentRotation = 0;
 		let queenCounter = 0
 		let heartsCounter = 0
 		const playerData = [];
@@ -72,6 +84,19 @@ Hearts Hub - {{group.name}}
 			playerData.push(player)
 		}
 
+		// Animation for fading out errors -----------------------------------------------------------------------------
+		const fade = (element) => {
+			let opacity = 100;
+			const duration = setInterval(() => {
+				if (opacity <= 0.1) {
+					clearInterval(duration);
+					element.remove();
+				}
+				element.style.opacity = `${opacity}%`;
+				opacity -= 1;
+			}, 50)
+		}
+
 		// Sets initial state of progress bars -------------------------------------------------------------------------------
 		const setBars = () => {
 			for(let i = 0; i < playerData.length; i++) {
@@ -82,6 +107,33 @@ Hearts Hub - {{group.name}}
 					progress = 100;
 				}
 				document.getElementById(`${player.name}_bar`).style.width = `${progress}%`;
+			}
+		}
+
+		// Sets initial state of progress bars -------------------------------------------------------------------------------
+		const setRotation = () => {
+			let initial = document.getElementById(`rotation_${rotation[currentRotation].innerHTML}`)
+			initial.style.backgroundColor = "#ff4040"
+		}
+
+		// Change rotation step -------------------------------------------------------------------------------
+		const changeRotation = () => {
+			let current = document.getElementById(`rotation_${rotation[currentRotation].innerHTML}`)
+
+			if (currentRotation === rotation.length - 1) {
+				let next = document.getElementById(`rotation_${rotation[0].innerHTML}`)
+
+				current.style.backgroundColor = "whitesmoke";
+				next.style.backgroundColor = "#ff4040"
+
+				currentRotation = 0;
+			} else {
+				let next = document.getElementById(`rotation_${rotation[currentRotation + 1].innerHTML}`)
+
+				current.style.backgroundColor = "whitesmoke";
+				next.style.backgroundColor = "#ff4040"
+
+				currentRotation++;
 			}
 		}
 
@@ -189,12 +241,17 @@ Hearts Hub - {{group.name}}
 				}
 
 			} else {
-				console.log("Hearts do not total 13 or a wrong number of queens selected")
+				let pointError = document.createElement('p');
+				pointError.setAttribute('class', 'error');
+				pointError.innerHTML = `Hearts do not total 13 or a wrong number of queens selected`;
+
+				document.getElementById("pointsValidate").appendChild(pointError);
+				fade(pointError)
 			}
 
-			//Reset counters
 			heartsCounter = 0;
 			queenCounter = 0;
+			changeRotation()
 		}
 
 		const moonshot = () => {
@@ -249,6 +306,7 @@ Hearts Hub - {{group.name}}
 		}
 
 		window.onload = setBars;
+		window.onload = setRotation;
 	</script>
 
 {% endblock %}
