@@ -20,7 +20,7 @@
 	</div>
 
 	<div class="center">
-		<h1 class="page-title">Create an Account</h1>
+		<h1 class="page-title" id="title">Create an Account</h1>
 		<div class="card" style="margin-top: 30px; text-align: center;">
 			<form method="POST" class="form-group">
 				{% csrf_token %}
@@ -44,7 +44,16 @@
 
 </body>
 
-<footer>
-	<p>An AppMoto Creation</p>
-</footer>
+<script type="text/javascript">
+	const resize = () => {
+		let title = document.getElementById("title")
+
+		title.style.fontSize = "30px";
+	}
+
+	if (window.innerWidth < 600) {
+		resize()
+	}
+</script>
+
 </html>

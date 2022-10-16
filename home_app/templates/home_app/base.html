@@ -3,7 +3,8 @@
 	<head>
 		{% load static %}
 		<link rel="shortcut icon" type="image/x-icon" href="{% static 'home_app/images/favicon.ico' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'home_app/style.css' %}">
+		<link rel="stylesheet" type="text/css" media="screen and (min-width: 600px)" href="{% static 'home_app/style.css' %}">
+		<link rel="stylesheet" type="text/css" media="screen and (max-width: 599px)" href="{% static 'home_app/style-small.css' %}">
 
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

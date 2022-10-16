@@ -20,10 +20,13 @@ def groups(request):
 	if request.user.is_authenticated:
 		username = request.user.username
 		grp = request.user.group.all()
-		sharedgroups = request.user.profile.sharedgroups.all()
-		groupsShared = filter(lambda group: group.shared == True, grp)
-		print(groupsShared)
-		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups, "groupsShared": groupsShared})
+		groups = []
+		for group in grp:
+			count = len(group.game_set.all())
+			groups.append({"data": group, "count": count})
+		sharedgroups = request.user.profile.sharedgroups.all() #Groups other users have shared with current user
+		groupsShared = list(filter(lambda group: group.shared == True, grp)) #Groups current user has shared with others
+		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups, "groupsShared": groupsShared, "groups": groups})
 	return render(request, "home_app/groups.html")
 
 def groupview(request, id):
@@ -34,7 +37,6 @@ def groupview(request, id):
 	if grp in request.user.group.all() or grp in request.user.profile.sharedgroups.all():
 		username = request.user.username
 		user = request.user
-		print(grp.stats)
 
 		#Creating a new game within group
 		count = 1
@@ -164,9 +166,7 @@ def groupStats (request, groupID):
 	numberHands = len(grp.stats[0]["hands"])
 
 	for player in grp.stats:
-		print(player)
 		sumPoints = sum(player["hands"])
-		print(player["placings"])
 
 		stats["avgPlace"].append({"name": player["name"], "value": round(sum(player["placings"]) / numberGames, 2)})
 		stats["modePlace"].append({"name": player["name"], "value": statistics.mode(player["placings"])})
@@ -185,7 +185,6 @@ def groupStats (request, groupID):
 def playerGroupStats(request, groupID, playerName):
 	grp = group.objects.get(id = groupID)
 	playerIndex = next((i for i, p in enumerate(grp.stats) if p["name"] == playerName), None)
-	print(grp.stats)
 	player = grp.stats[playerIndex]
 
 	numberGames = len(player["placings"])
@@ -280,22 +279,6 @@ def create(request):
 						)
 					newPerson.save()
 					newPerson.group.add(newgroup)
-
-
-			# Create new person if they do not exist yet
-			# newP = request.POST.get("newplayer")
-			# if request.user.person.filter(name__exact=newP).exists() == False:
-			# 	new = grp.person_set.create(name=newP, points = 0, placing = 1, user = request.user)
-			# 	grp.person_set.add(new)
-			# 	return render(request, "home_app/addplayers.html", {"group": grp})
-			# else:
-			# 	existing = userplayers.get(name__exact=newP)
-			# 	grp.person_set.add(existing)
-			# 	return render(request, "home_app/addplayers.html", {"group": grp})
-
-			# Add some validation here eventually
-
-			# return HttpResponseRedirect("/groups/%i/%i" % (grp.id, newgame.id))
 
 			return HttpResponseRedirect("/groups")
 

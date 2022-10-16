@@ -35,6 +35,9 @@ Hearts Hub - Groups
 
 	<h2 class="section-title" class="section-title">Games</h2 class="section-title">
 	<h5 class="desc-small">Click a game to view the results</h5>
+	<div class="container-center">
+		<a href="{% url 'newGame' group.id gameNumber %}" class="btn-submit" style="font-size: 13px; margin-top: 10px; display: inline-block;">New Game</a>
+	</div>
 	<div class="grid">
 		{% for i in group.game_set.all %}
 			<a href="{% url 'result' group.id i.id %}" class="card-link">
@@ -49,10 +52,6 @@ Hearts Hub - Groups
 			<p class="message">You have not played any games in this group yet</p>
 		</div>
 	{% endif %}
-
-	<div class="container-center">
-		<a href="{% url 'newGame' group.id gameNumber %}" class="btn-submit" style="font-size: 13px; margin-top: 20px; display: inline-block;">New Game</a>
-	</div>
 
 	<form method="post" action="#">
 		{% csrf_token %}

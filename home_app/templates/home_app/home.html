@@ -3,7 +3,8 @@
 	<head>
 		{% load static %}
 		<link rel="shortcut icon" type="image/x-icon" href="{% static 'home_app/images/favicon.ico' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'home_app/style.css' %}">
+		<link rel="stylesheet" type="text/css" media="screen and (min-width: 600px)" href="{% static 'home_app/style.css' %}">
+		<link rel="stylesheet" type="text/css" media="screen and (max-width: 599px)" href="{% static 'home_app/style-small.css' %}">
 
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,13 +28,12 @@
 				overflow: auto;
 				display: inline-block;
 			}
-
 		</style>
 	</head>
 {% load static %}
 
 <body>
-	<div class="header">
+	<div class="header" style="text-align: center;">
 		{% if request.user.is_authenticated %}
 			<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="red" fill="none" stroke-linecap="round" stroke-linejoin="round" style="padding-left: 10px; float: left; cursor: pointer;" onclick="toggleNav()">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -78,17 +78,19 @@
 		<br>
 
 		{% if not request.user.is_authenticated %}
-			<div class="link" style="margin: 20px 0px;">
+			<a class="link" style="margin: 20px 0px;" href="/login">
 				<!-- <img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon" style="top: 0; left: 0"> -->
-				<a href="/login" style="font-family: Veranda, monospace; font-weight: bold; text-decoration: none">Log-in or register to access the full functionality and start tracking your points!</a>
+				<p style="font-family: Veranda, monospace; font-weight: bold; text-decoration: none">Log-in or register to access the full functionality and start tracking your points!</p>
 				<!-- <img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon"> -->
-			</div>
+			</a>
 		{% endif %}
 		<br>
 
-		<div class="video">
-			<iframe width="700" height="480" src="https://www.youtube.com/embed/3Pj7y_vOs7Q"></iframe>
+		<div class="video" id="video">
+			<iframe width=700 height=480 src="https://www.youtube.com/embed/3Pj7y_vOs7Q" id="tutorial"></iframe>
 		</div>
+
+		<a id="link-container" class="card" href="https://www.youtube.com/embed/3Pj7y_vOs7Q" style="display: none; text-decoration: none;"></a>
 
 		<br>
 	</div>
@@ -101,6 +103,21 @@
 			} else {
 				nav.style.display = "none"
 			}
+		}
+
+		const resize = () => {
+			let video = document.getElementById("tutorial")
+			video.remove()
+
+			let link = document.createElement('p')
+			link.innerHTML = "Hearts Tutorial Video"
+			link.setAttribute('style', 'cursor: pointer; text-align: center; padding: 10px 10px; font-weight: bold')
+			document.getElementById("link-container").style.display = "block"
+			document.getElementById("link-container").appendChild(link)
+		}
+
+		if (window.innerWidth < 720) {
+			resize()
 		}
 	</script>
 

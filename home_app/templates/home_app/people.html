@@ -13,7 +13,7 @@ Hearts Hub - Players
 		{% for player in user.person.all %}
 			<a class="card-link" href="{% url 'playerStatistics' player.name %}">
 				<div class="card">
-					<p style="text-align: center">{{player.name}}</p>
+					<p style="text-align: center; font-weight: bold;">{{player.name}}</p>
 				</div>
 			</a>
 		{% endfor %}

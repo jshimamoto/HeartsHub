@@ -17,6 +17,15 @@ class group(models.Model):
 	def __str__(self):
 		return self.name
 
+class game(models.Model):
+	group = models.ForeignKey(group, on_delete = models.CASCADE)
+	name = models.CharField(max_length = 100)
+	results = models.JSONField()
+	# [{player: name, points: point, queens: queen, moonshots: moonshot}, {}...]
+
+	def __str__(self):
+		return self.name
+
 class profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	sharedgroups = models.ManyToManyField(group, related_name="sharedgroups")
@@ -28,35 +37,21 @@ def create_user_profile(sender, instance, created, **kwargs):
 	if created:
 		profile.objects.create(user=instance)
 
-# @receiver(post_save, sender=User)
-# def save_user_profile(post_save, instance, **kwargs):
-# 	instance.profile.save()
-# 	post_save.connect(create_user_profile, sender='users.CustomUser')
-
 
 class person(models.Model):
 	user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "person", null = True)
 	group = models.ManyToManyField(group)
 	name = models.CharField(max_length = 50)
 	stats = models.JSONField()
-		# "hands": [],
-		# "queens": 0,
-		# "moonshots": 0,
-		# "placings": []
-		# Stats - array of points received in each hand
-		# number of hands
 
 	def __str__(self):
 		return self.name
 
-class game(models.Model):
-	group = models.ForeignKey(group, on_delete = models.CASCADE)
-	name = models.CharField(max_length = 100)
-	results = models.JSONField()
-	# [{player: name, points: point, queens: queen, moonshots: moonshot}, {}...]
 
-	def __str__(self):
-		return self.name
+# @receiver(post_save, sender=User)
+# def save_user_profile(post_save, instance, **kwargs):
+# 	instance.profile.save()
+# 	post_save.connect(create_user_profile, sender='users.CustomUser')
 
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------#

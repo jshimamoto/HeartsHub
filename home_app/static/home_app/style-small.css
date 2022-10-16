@@ -25,6 +25,7 @@ body::before {
 	margin-top: 50px;
 	position: relative;
 	text-align: center;
+	margin: 50px 15px 10px 15px;
 }
 
 .content:after {
@@ -35,12 +36,13 @@ body::before {
 .video {
 	position: relative;
 	margin: auto;
-	width: 700px;
-	height: 480px;
+	/*width: 700px;
+	height: 480px;*/
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
+	text-align: center;
 }
 
 /*.footer {
@@ -163,6 +165,7 @@ p {
     margin: 5px 0px;
     font-size: 30px;
     margin-right: 20px;
+    text-align: center;
 }
 
 .sub-section-title {
@@ -178,13 +181,13 @@ p {
 
 .grid {
 	display: grid;
-    width: auto;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-column-gap: 20px;
-    grid-row-gap: 20px;
-    justify-items: stretch;
-    align-items: stretch;
-    margin: 10px 10px;
+	width: auto;
+	grid-template-columns: 1fr 1fr;
+	grid-column-gap: 20px;
+	grid-row-gap: 5px;
+	justify-items: stretch;
+	align-items: stretch;
+	margin: 10px 10px;
 }
 
 .line-break {
@@ -196,10 +199,10 @@ p {
 .desc-small {
 	color: gray;
 	font-style: italic;
-	font-size: 15px;
+	font-size: 10px;
 	font-family: monospace;
 	margin-top: 0px;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 }
 
 .container-center {
@@ -210,7 +213,7 @@ p {
 	background-color: whitesmoke;
 	border-radius: 10px;
 	box-shadow: 0 0 5px gray;
-	padding: 20px 30px;
+	padding: 12px 30px;
 	font-family: sans-serif;
 	font-weight: bold;
 	display: inline-block;
@@ -253,13 +256,6 @@ p {
 }
 
 /*Forms --------------------------------------------------------------------------------------------------------------------------*/
-button:hover {
-	box-shadow: 3px 3px 3px gray;
-	position: relative;
-	bottom: 3px;
-	right: 3px;
-	cursor: pointer;
-}
 
 .btn-submit {
 	margin: 10px 0px;
@@ -273,22 +269,6 @@ button:hover {
 	font-family: sans-serif;
 }
 
-.btn-submit:hover {
-	margin: 10px 0px;
-	background-color: #008CBA;
-	padding: 10px 20px;
-	color: white;
-	border: 0px;
-	border-radius: 10px;
-	cursor: pointer;
-	text-decoration: none;
-	font-family: sans-serif;
-	box-shadow: 3px 3px 3px gray;
-	position: relative;
-	bottom: 3px;
-	right: 3px;
-}
-
 .btn-delete {
 	margin: 10px 0px;
 	background-color: #f44336;
@@ -299,59 +279,33 @@ button:hover {
 }
 
 .btn-moonshot {
-	margin-left: 20px;
+	margin-left: 10px;
 	background-color: white;
 	padding: 6px 10px;
 	color: black;
 	border: 2px solid black;
 	border-radius: 10px;
 	font-family: Corbel;
-	font-size: 18px;
-	font-weight: bold;
-	cursor: pointer;
-}
-
-.btn-moonshot:hover {
-	margin-left: 20px;
-	background-color: black;
-	padding: 6px 10px;
-	color: white;
-	border: 2px solid black;
-	border-radius: 10px;
-	font-family: Corbel;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: bold;
 	cursor: pointer;
 }
 
 label {
 	font-family: Corbel;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: bold;
 }
 
 .checked-label {
 	font-family: Corbel;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: bold;
 	border: 2px solid black;
 	border-radius: 10px;
 	background-color: white;
 	padding: 5px 10px;
-	margin-left: 20px;
-	cursor: pointer;
-}
-
-.checked-label:hover {
-	font-family: Corbel;
-	font-size: 18px;
-	font-weight: bold;
-	border: 2px solid black;
-	border-radius: 10px;
-	background-color: black;
-	padding: 5px 10px;
-	margin-left: 20px;
-	color: white;
+	margin-left: 10px;
 	cursor: pointer;
 }
 
@@ -363,13 +317,13 @@ input[type='checkbox'] {
 
 input[type='checkbox']:checked + .checked-label {
 	font-family: Corbel;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: bold;
 	border: 2px solid black;
 	border-radius: 10px;
 	background-color: black;
 	padding: 5px 10px;
-	margin-left: 20px;
+	margin-left: 10px;
 	color: white;
 }
 
@@ -453,14 +407,15 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 	text-decoration: none;
 	width: auto;
 	position: relative;
-	font-size: 18px;
+	font-size: 15px;
 }
 
 .card {
 	background-color: whitesmoke;
 	border-radius: 10px;
 	box-shadow: 5px 5px 5px gray;
-	padding: 10px 10px;
+	padding: 2px 2px;
+	margin: 10px 0px;
 }
 
 .card:hover {
@@ -474,6 +429,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 	text-decoration: none;
 	color: black;
 	font-family: Helvetica, Arial, sans-serif;
+	font-size: 15px;
 }
 
 .card > h4 {
@@ -484,8 +440,8 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 
 .card > p {
-	margin-top: 10px;
-	margin-bottom: 10px;
+/*	margin-top: 10px;
+	margin-bottom: 10px;*/
 	text-decoration: none;
 	text-align: center;
 }
@@ -493,7 +449,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .spade-icon {
 	height: 25px;
 	position: absolute;
-	top: 0;
+	top: 10px;
 	left: 0;
 	padding: 5px;
 }
@@ -501,7 +457,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .heart-icon {
 	height: 22px;
 	position: absolute;
-	top: 0;
+	top: 10px;
 	right: 0;
 	padding: 5px;
 }
@@ -509,7 +465,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .diamond-icon {
 	height: 25px;
 	position: absolute;
-	bottom: 0;
+	bottom: 10px;
 	left: 0;
 	padding: 5px;
 }
@@ -517,7 +473,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .club-icon {
 	height: 25px;
 	position: absolute;
-	bottom: 0;
+	bottom: 10px;
 	right: 0;
 	padding: 5px;
 }

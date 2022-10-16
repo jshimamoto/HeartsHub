@@ -48,7 +48,7 @@ Hearts Hub - Groups
 
 	<h2 class="section-title">Statistics per Game</h2 class="section-title">
 	<h5 class="desc-small">These are the current statistics for this group per game</h5 class="desc-small">
-	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;" id="game">
 		<div class="card">
 			<p>Average Hearts per Game</p>
 			<div class="line-break"></div>
@@ -71,7 +71,7 @@ Hearts Hub - Groups
 
 	<h2 class="section-title" class="section-title">Statistics per Hand</h2 class="section-title">
 	<h5 class="desc-small">These are the current statistics for this group per hand</h5>
-	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;" id="hand">
 		<div class="card">
 			<p>Average Hearts per Hand</p>
 			<div class="line-break"></div>
@@ -90,5 +90,21 @@ Hearts Hub - Groups
 			<p>{{stats.avgWellDonesHand}}</p>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		console.log(window.innerWidth)
+		const resize = () => {
+			//let overallStats = document.getElementById("overall")
+			let gameStats = document.getElementById("game")
+			let handStats = document.getElementById("hand")
+
+			gameStats.style.gridTemplateColumns = "1fr 1fr";
+			handStats.style.gridTemplateColumns = "1fr 1fr";
+		}
+
+		if (window.innerWidth < 600) {
+			resize()
+		}
+	</script>
 
 {% endblock %}

@@ -5,9 +5,9 @@ Hearts Hub - {{group.name}}
 {% endblock %}
 
 {% block content %}
-	<h1 class="page-title">{{group.name}} - {{gameName}}</h1>
+	<h1 class="page-title" id="title">{{group.name}} - {{gameName}}</h1>
 
-	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr">
+	<div class="grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr" id="roto">
 		{% for step in group.rotation %}
 			<div class="card" id="rotation_{{step}}">
 				<p style="text-align: center; font-weight: bold;" class="rotation">{{step}}</p>
@@ -27,7 +27,7 @@ Hearts Hub - {{group.name}}
 	</div>
 
 	<h2 class="section-title" style="padding-top: 10px;">Points in Hand</h2>
-	<h5 class="desc-small" style="margin-bottom: 20px">Input the number of hearts received for this hand and click the spades icon for the player that received the Queen of Spades. Either hit the "End Game Now" button or reach the maximum number of points to save this game's data</h5>
+	<h5 class="desc-small" style="margin-bottom: 20px">Input the number of hearts received for this hand and click "Queen" for the player that received the Queen of Spades. Either hit the "End Game Now" button or reach the maximum number of points to save this game's data</h5>
 	<form method="post" action="#" id="form">
 		{% csrf_token %}
 		<div class="container-center">
@@ -307,6 +307,26 @@ Hearts Hub - {{group.name}}
 
 		window.onload = setBars;
 		window.onload = setRotation;
+
+		const resize = () => {
+			let roto = document.getElementById("roto")
+			let title = document.getElementById("title")
+			let queens = document.getElementsByClassName("checked-label")
+			//let private = document.getElementById("private")
+
+			//owned.style.textAlign = "center";
+			title.style.fontSize = "35px";
+			roto.style.gridTemplateColumns = "1fr 1fr 1fr";
+			for (let i =0; i < queens.length; i++) {
+				queens[i].innerHTML = "Q"
+			}
+
+
+		}
+
+		if (window.innerWidth < 600) {
+			resize()
+		}
 	</script>
 
 {% endblock %}

@@ -11,31 +11,31 @@ Hearts Hub - Groups
 
 	<h2 class="section-title">Private Groups</h2>
 	<h5 class="desc-small">These are the groups you do not have currently shared</h5>
-	<div class="grid">
-		{% for i in user.group.all %}
-			{% if i.shared == False %}
-				<a href="{% url 'groupview' i.id %}" class="card-link">
-					<div class="card" style="padding-bottom: 40px">
+	<div class="grid" id="private">
+		{% for group in groups %}
+			{% if group.data.shared == False %}
+				<a href="{% url 'groupview' group.data.id %}" class="card-link">
+					<div class="card" style="padding-bottom: 10px">
 						<img src="{% static 'home_app/images/spade.png' %}" alt="spade icon" class="spade-icon">
 						<img src="{% static 'home_app/images/heart.png' %}" alt="heart icon" class="heart-icon">
 						<img src="{% static 'home_app/images/diamond.png' %}" alt="diamond icon" class="diamond-icon">
 						<img src="{% static 'home_app/images/club.png' %}" alt="club icon" class="club-icon">
-						<h4>{{i.name}}</h4>
+						<h4>{{group.data.name}}</h4>
 
 						<div class="line-break"></div>
 
 						<p>Players</p>
-						{% for player in i.stats %}
+						{% for player in group.data.stats %}
 							<span class="player-span">{{player.name}}</span>
 						{% endfor %}
 
 						<div class="line-break"></div>
 
-						<!-- <p>Games Played: {{</p> -->
+						<p>Games Played: {{group.count}}</p>
 					</div>
 				</a>
 			{% endif %}
-			{% if not groupsShared %}
+			{% if not groups %}
 				<div class="container-center">
 					<p class="message">You currently do not have any groups.<br>You can create groups in the create tab</p>
 				</div>
@@ -46,13 +46,13 @@ Hearts Hub - Groups
 	<h2 class="section-title">Shared Groups</h2>
 	<h5 class="desc-small" style="margin-bottom: 10px;">These are the groups you have currently shared with other users. Share or delete groups on the group page. You can only delete groups you own</h5>
 
-	<h4 class="sub-section-title">Owned</h4>
+	<h4 class="sub-section-title" id="owned">Owned</h4>
 	<div class="grid">
-		{% for i in user.group.all %}
-			{% if i.shared == True %}
-				<a href = "{% url 'groupview' i.id %}">{{i.name}}
+		{% for group in groups %}
+			{% if group.data.shared == True %}
+				<a href = "{% url 'groupview' i.id %}">{{group.data.name}}
 					<div class="card">
-						{% for j in i.person_set.all %}
+						{% for j in group.person_set.all %}
 							<p>{{j.name}}</p>
 						{% endfor %}
 					</div>
@@ -60,13 +60,13 @@ Hearts Hub - Groups
 			{% endif %}
 		{% endfor %}
 	</div>
-	{% if user.group.all %}
+	{% if not groupsShared %}
 		<div class="container-center">
 			<p class="message">You are currently not sharing groups with other users</p>
 		</div>
 	{% endif %}
 
-	<h4 class="sub-section-title">Shared with Me</h4>
+	<h4 class="sub-section-title" id="shared">Shared with Me</h4>
 	{% if sharedgroups %}
 		<div class="grid">
 				{% for i in sharedgroups %}
@@ -84,5 +84,21 @@ Hearts Hub - Groups
 			<p class="message">You currently do not have any groups shared with you</p>
 		</div>
 	{% endif %}
+
+	<script type="text/javascript">
+		const resize = () => {
+			let owned = document.getElementById("owned")
+			let shared = document.getElementById("shared")
+			let private = document.getElementById("private")
+
+			owned.style.textAlign = "center";
+			shared.style.textAlign = "center";
+			private.style.gridTemplateColumns = "1fr"
+		}
+
+		if (window.innerWidth < 600) {
+			resize()
+		}
+	</script>
 
 {% endblock %}

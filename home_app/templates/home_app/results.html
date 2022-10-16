@@ -5,7 +5,7 @@ Hearts Hub - {{res.groupname}}
 {% endblock %}
 
 {% block content %}
-	<h1 class="page-title">{{group.name}} - {{game.name}}</h1>
+	<h1 class="page-title" id="title">{{group.name}} - {{game.name}}</h1>
 
 	<h2 class="section-title">Placings</h2 >
 	<div class="grid">
@@ -40,4 +40,20 @@ Hearts Hub - {{res.groupname}}
 	<div class="container-center">
 		<a href= "{% url 'groupview' group.id %}" class="btn-submit" style="text-decoration: none; margin-top: 20px;">Back to Group</a>
 	</div>
+
+	<script type="text/javascript">
+		const resize = () => {
+			let title = document.getElementById("title")
+			let shared = document.getElementById("shared")
+			let private = document.getElementById("private")
+
+			title.style.fontSize = "30px";
+			shared.style.textAlign = "center";
+			private.style.gridTemplateColumns = "1fr"
+		}
+
+		if (window.innerWidth < 600) {
+			resize()
+		}
+	</script>
 {% endblock %}
