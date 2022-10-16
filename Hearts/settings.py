@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crispy_forms',
     'home_app.apps.HomeAppConfig',
     'register.apps.RegisterConfig',
 ]
@@ -123,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
@@ -132,6 +131,6 @@ LOGOUT_REDIRECT_URL = "/login/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CRISPY_TEMPLATE_PACK='bootstrap4'
+#CRISPY_TEMPLATE_PACK='bootstrap4'
 
 #django_heroku.settings(locals())
