@@ -59,13 +59,13 @@ Hearts Hub - Groups
 		<h2 class="section-title">Manage Group</h2>
 		<h5 class="desc-small">Select a player from your friends list to share this group with. They will be able to share and view this group as well.</h5>
 		<input type="text" list="userlist" name="shareduser" class="form-control col-2" placeholder="Enter username to share with" aria-label="Enter Username" aria-describedby="basic-addon1">
-		<datalist id="userlist">
+		<!-- <datalist id="userlist">
 			{% for i in users %}
 				{% if i.username != username %}
 					<option value="{{ i.username }}">
 				{% endif %}
 			{% endfor %}
-		</datalist>
+		</datalist> -->
 		<div class="input-group-append">
 			<button name="share" value="share" class="btn-submit" type="submit">Share Group</button>
 		</div>
