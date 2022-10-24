@@ -177,6 +177,7 @@ Hearts Hub - {{group.name}}
 
 			// Only update scores if hearts and queen is correct
 			if (heartsCounter === 13 && queenCounter === 1) {
+				window.scrollTo(0, 0)
 				for(let i = 0; i < playerData.length; i++) {
 					//Gathering data
 					let player = playerData[i]
@@ -255,6 +256,7 @@ Hearts Hub - {{group.name}}
 		}
 
 		const moonshot = () => {
+			window.scrollTo(0, 0)
 			document.addEventListener('click', function(e) {
 				let temp = e.target.id
 				let shooter = temp.split("_")[0]
@@ -302,6 +304,8 @@ Hearts Hub - {{group.name}}
 						send()
 					}
 				}
+
+				changeRotation();
 			}, {once: true})
 		}
 
