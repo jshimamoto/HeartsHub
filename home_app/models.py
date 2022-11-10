@@ -28,7 +28,7 @@ class game(models.Model):
 
 class profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	sharedgroups = models.ManyToManyField(group, related_name="sharedgroups")
+	sharedgroups = models.ManyToManyField(group, related_name="sharedUsers")
 	# friends: list of all user ids that are friends [{userID: id, username: name}]
 	# requests: will be the user id and a message [{userID: id, username: name, message: message}]
 
@@ -48,12 +48,6 @@ class person(models.Model):
 		return self.name
 
 
-# @receiver(post_save, sender=User)
-# def save_user_profile(post_save, instance, **kwargs):
-# 	instance.profile.save()
-# 	post_save.connect(create_user_profile, sender='users.CustomUser')
-
-
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 #Notes/Archive
@@ -71,3 +65,8 @@ class person(models.Model):
 # 	else:
 # 		pass
 
+
+# @receiver(post_save, sender=User)
+# def save_user_profile(post_save, instance, **kwargs):
+# 	instance.profile.save()
+# 	post_save.connect(create_user_profile, sender='users.CustomUser')

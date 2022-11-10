@@ -24,8 +24,17 @@ def groups(request):
 		for group in grp:
 			count = len(group.game_set.all())
 			groups.append({"data": group, "count": count})
-		sharedgroups = request.user.profile.sharedgroups.all() #Groups other users have shared with current user
-		groupsShared = list(filter(lambda group: group.shared == True, grp)) #Groups current user has shared with others
+
+		sharedgroups = [] #Groups other users have shared with current user / Shared with me
+		for group in request.user.profile.sharedgroups.all():
+			count = len(group.game_set.all())
+			sharedgroups.append({"data": group, "count": count})
+
+		groupsShared = [] #Groups current user has shared with others / Owned
+		for group in list(filter(lambda group: group.shared == True, grp)):
+			count = len(group.game_set.all())
+			groupsShared.append({"data": group, "count": count})
+
 		return render(request, "home_app/groups.html", {"sharedgroups": sharedgroups, "groupsShared": groupsShared, "groups": groups})
 	return render(request, "home_app/groups.html")
 
@@ -44,18 +53,23 @@ def groupview(request, id):
 			count += 1
 
 		if request.method == "POST":
-
 			#Deleting Group
 			if request.POST.get("delete"):
 				grp.delete()
 				return HttpResponseRedirect("/groups")
 			#Sharing the group with another user
 			elif request.POST.get("share"):
+				result = {}
 				recipientname = request.POST.get("shareduser")
 				if User.objects.filter(username = recipientname).exists() == False:
-					messages.error(request, 'User does not exist')
+					#messages.error(request, 'User does not exist')
+					result["type"] = "error"
+					result["message"] = "User does not exist"
+					return render(request, "home_app/groupview.html", {"group": grp, "username": username, "user": user, "gameNumber": count, "result": result})
 				elif recipientname == username:
-					messages.error(request, 'Cannot use your own username')
+					result["type"] = "error"
+					result["message"] = "Cannot use your own username"
+					return render(request, "home_app/groupview.html", {"group": grp, "username": username, "user": user, "gameNumber": count, "result": result})
 				else:
 					recipient = User.objects.get(username = recipientname)
 					recipient.profile.sharedgroups.add(grp)
@@ -63,10 +77,11 @@ def groupview(request, id):
 					recipient.profile.save()
 					grp.shared = True
 					grp.save()
-					messages.success(request, 'Group shared!')
-					return render(request, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "user": user})
+					result["type"] = "success"
+					result["message"] = "Group shared successfully!"
+					return render(request, "home_app/groupview.html", {"group": grp, "username": username, "user": user, "gameNumber": count, "result": result})
 
-		return render(request, "home_app/groupview.html", {"group": grp, "users": users, "username": username, "gameNumber": count})
+		return render(request, "home_app/groupview.html", {"group": grp, "username": username, "gameNumber": count})
 
 	return render(request, "home_app/groups.html", {"group": grp})
 
@@ -106,28 +121,6 @@ def game_(request, groupid, gameNumber):
 			return HttpResponseRedirect("/groups/%i/results/%i" % (grp.id, gameID))
 
 		return render(request, "home_app/game.html", {"group": grp, "gameName": gameName})
-
-			#Ending game
-			# if request.POST.get("endgame"):
-			# 	gme.complete = True
-			# 	gme.save()
-			# 	for person in grp.person_set.all():
-			# 		for i in grp.person_set.all():
-			# 			if i.id == person.id:
-			# 				pass
-			# 			elif i.points < person.points:
-			# 				person.placing += 1
-			# 				person.save()
-			# 	# Adding stats to person
-			# 	for person in grp.person_set.all():
-			# 		person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
-			# 		person.save()
-			# 	Creating results
-			# 	res = results.objects.create(game = gme, groupname = grp.name)
-			# 	for i in grp.person_set.all():
-			# 		res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
-			# 		res.save()
-			# 	return HttpResponseRedirect("/results/%i" %res.id)
 
 	else: 
 		return render(request, "home_app/groups.html", {"group": grp, "gameName": gameName})
@@ -414,28 +407,6 @@ def people(request):
 
 		# 			person.save()
 
-		# 		#Ending the game when maxpoints is reached
-		# 		for person in grp.person_set.all():
-		# 			if person.points >= grp.maxpoints:
-		# 				gme.complete = True
-		# 				gme.save()
-		# 				for person in grp.person_set.all():
-		# 					for i in grp.person_set.all():
-		# 						if i.id == person.id:
-		# 							pass
-		# 						elif i.points < person.points:
-		# 							person.placing += 1
-		# 							person.save()
-		# 				#Adding stats to person
-		# 				# for person in grp.person_set.all():
-		# 				# 	person.stats += str(person.placing) + "." +str(grp.id) + "-" + str(gme.id) + ";"
-		# 				# 	person.save()
-		# 				#Creating results
-		# 				res = results.objects.create(game = gme, groupname = grp.name)
-		# 				for i in grp.person_set.all():
-		# 					res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
-		# 					res.save()
-		# 				return HttpResponseRedirect("/results/%i" %res.id)
 
 # def addplayers(request, id):
 # 	grp = group.objects.get(id = id)
@@ -458,3 +429,25 @@ def people(request):
 # 			return HttpResponseRedirect("/groups")
 
 # 	return render(request, "home_app/addplayers.html", {"group": grp, "players": userplayers})
+
+			#Ending game
+			# if request.POST.get("endgame"):
+			# 	gme.complete = True
+			# 	gme.save()
+			# 	for person in grp.person_set.all():
+			# 		for i in grp.person_set.all():
+			# 			if i.id == person.id:
+			# 				pass
+			# 			elif i.points < person.points:
+			# 				person.placing += 1
+			# 				person.save()
+			# 	# Adding stats to person
+			# 	for person in grp.person_set.all():
+			# 		person.stats += str(person.placing) + "." + str(grp.id) + "-" + str(gme.id) + ";"
+			# 		person.save()
+			# 	Creating results
+			# 	res = results.objects.create(game = gme, groupname = grp.name)
+			# 	for i in grp.person_set.all():
+			# 		res.stats += str(i.name) + "," + str(i.points) + "," + str(i.placing) + ";"
+			# 		res.save()
+			# 	return HttpResponseRedirect("/results/%i" %res.id)

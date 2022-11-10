@@ -25,10 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False #DEPLOYNMENT ------------------------------------------------------------------------------------------------------
+DEBUG = False #DEPLOYNMENT ----------------------------------------------------------------------------------------------------------------------
 
-ALLOWED_HOSTS = ['hearts-alpha.herokuapp.com'] #DEPLOYNMENT -----------------------------------------------------------------
-#'heartshub.herokuapp.com'
+ALLOWED_HOSTS = ['heartshub.herokuapp.com'] #DEPLOYNMENT -----------------------------------------------------------------------------------------------------
+#'heartshub.herokuapp.com' DEPLOYMENT
+#'127.0.0.1' DEVELOPMENT
 
 # Application definition
 
@@ -134,4 +135,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CRISPY_TEMPLATE_PACK='bootstrap4'
 
-django_heroku.settings(locals()) #DEPLOYNMENT -----------------------------------------------------------------
+django_heroku.settings(locals()) #DEPLOYNMENT --------------------------------------------------------------------------------------------------

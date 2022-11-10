@@ -53,29 +53,44 @@ Hearts Hub - Groups
 		</div>
 	{% endif %}
 
-	<form method="post" action="#">
-		{% csrf_token %}
-
+	{% if group.user == user %}
 		<h2 class="section-title">Manage Group</h2>
-		<h5 class="desc-small">Select a player from your friends list to share this group with. They will be able to share and view this group as well.</h5>
-		<input type="text" list="userlist" name="shareduser" class="form-control col-2" placeholder="Enter username to share with" aria-label="Enter Username" aria-describedby="basic-addon1">
-		<!-- <datalist id="userlist">
-			{% for i in users %}
-				{% if i.username != username %}
-					<option value="{{ i.username }}">
-				{% endif %}
-			{% endfor %}
-		</datalist> -->
-		<div class="input-group-append">
-			<button name="share" value="share" class="btn-submit" type="submit">Share Group</button>
-		</div>
+		<h5 class="desc-small">Select a player from your friends list to share this group with. They will be able to play games in this group.</h5>
+		<h4 class="sub-section-title" id="owned">Shared Users</h4>
+		{% if group.sharedUsers.all %}
+			<div class="grid">
+				{% for profile in group.sharedUsers.all %}
+					<p class="card" style="cursor: pointer; text-align: center; padding: 10px 10px; font-weight: bold; background-color: lightgray">{{profile.user}}</p>
+				{% endfor %}
+			</div>
+		{% else %}
+			<div class="container-center">
+				<p class="message">You are currently not sharing this group with other users</p>
+			</div>
+		{% endif %}
+		<form method="post" action="#">
+			{% csrf_token %}
+			<input type="text" list="userlist" name="shareduser" placeholder="Enter username to share with">
+			<!-- <datalist id="userlist">
+				{% for i in users %}
+					{% if i.username != username %}
+						<option value="{{ i.username }}">
+					{% endif %}
+				{% endfor %}
+			</datalist> -->
+			<div class="input-group-append">
+				<button name="share" value="share" class="btn-submit" type="submit">Share Group</button>
+			</div>
+			{% if result %}
+				<div class="container-center" style="display: inline-block;">
+					<p class="{{result.type}}" id="shared" style="text-align: center;">{{result.message}}</p>
+				</div>
+			{% endif %}
 
-		<div class="line-break"></div>
-
-		{% if group.user == user %}
+			<div class="line-break"></div>
 			<div>
 				<button type="submit", name="delete", value="delete" class="btn-delete">Delete Group</button>
 			</div>
-		{% endif %}
-	</form>
+		</form>
+	{% endif %}
 {% endblock %}

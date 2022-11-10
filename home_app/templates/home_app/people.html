@@ -9,14 +9,20 @@ Hearts Hub - Players
 
 	<div class="line-break"></div>
 	<h5 class="desc-small">Click on a player to view statistics and other information</h5>
-	<div class="grid">
-		{% for player in user.person.all %}
-			<a class="card-link" href="{% url 'playerStatistics' player.name %}">
-				<div class="card">
-					<p style="text-align: center; font-weight: bold;">{{player.name}}</p>
-				</div>
-			</a>
-		{% endfor %}
-	</div>
+	{% if user.person.all %}
+		<div class="grid">
+			{% for player in user.person.all %}
+				<a class="card-link" href="{% url 'playerStatistics' player.name %}">
+					<div class="card">
+						<p style="text-align: center; font-weight: bold;">{{player.name}}</p>
+					</div>
+				</a>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="container-center">
+			<p class="message">You currently do not have any players set up. Create groups and play games to see player statistics here</p>
+		</div>
+	{% endif %}
 
 {% endblock %}
